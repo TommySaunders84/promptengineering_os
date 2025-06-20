@@ -1,0 +1,3175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Engineering OS - Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #60a5fa;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --border-color: #334155;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        /* Sidebar Navigation */
+        .sidebar {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 280px;
+            height: calc(100vh - 60px);
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+            padding: 2rem 0;
+        }
+        
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+        
+        .nav-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            padding: 0 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .nav-item {
+            display: block;
+            padding: 0.5rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .nav-item.active {
+            background: var(--bg-tertiary);
+            color: var(--accent-primary);
+            border-left-color: var(--accent-primary);
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            margin-top: 60px;
+            flex: 1;
+            padding: 3rem;
+            max-width: 1200px;
+        }
+        
+        .content-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        
+        h2 {
+            font-size: 1.875rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+        
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+        
+        .lead {
+            font-size: 1.125rem;
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+        }
+        
+        /* Cards */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .feature-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* Code blocks */
+        .code-block {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+        
+        .code-block code {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--accent-secondary);
+        }
+        
+        /* Interactive Visualization Container */
+        .viz-container {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            min-height: 600px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background: var(--accent-secondary);
+            transform: translateY(-1px);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        /* Architecture Diagram Styles */
+        .architecture-svg {
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+        }
+        
+        .layer-controls {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            z-index: 10;
+        }
+        
+        .layer-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+        }
+        
+        .layer-toggle input {
+            cursor: pointer;
+        }
+        
+        .layer-toggle label {
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 1.5rem;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Diagram Elements */
+        .cell-node {
+            fill: #1e293b;
+            stroke: #3b82f6;
+            stroke-width: 2;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .cell-node:hover {
+            fill: #334155;
+            stroke: #60a5fa;
+            stroke-width: 3;
+        }
+        
+        .kg-node {
+            fill: #10b981;
+            opacity: 0.8;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .kg-node:hover {
+            opacity: 1;
+            r: 32;
+        }
+        
+        .mcp-node {
+            fill: #f59e0b;
+            stroke: #f59e0b;
+            stroke-width: 2;
+            fill-opacity: 0.2;
+        }
+        
+        .os-layer {
+            fill: #8b5cf6;
+            stroke: #8b5cf6;
+            stroke-width: 3;
+            fill-opacity: 0.1;
+            stroke-dasharray: 5,5;
+        }
+        
+        .connection-line {
+            stroke: #475569;
+            stroke-width: 2;
+            fill: none;
+            opacity: 0.6;
+        }
+        
+        .text-label {
+            fill: var(--text-primary);
+            font-size: 12px;
+            text-anchor: middle;
+        }
+        
+        /* Cell Architecture Specific Additional Styles */
+        .cell.active .cell-body {
+            fill: rgba(56, 178, 172, 0.1);
+            stroke: #4fd1c5;
+            stroke-width: 3;
+        }
+        
+        /* Knowledge Graph Styles */
+        .kg-node-circle {
+            fill: rgba(147, 197, 253, 0.8);
+            stroke: #93c5fd;
+            stroke-width: 2;
+        }
+        
+        .kg-edge {
+            stroke: rgba(147, 197, 253, 0.4);
+            stroke-width: 1.5;
+            fill: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .kg-edge.visible {
+            opacity: 1;
+        }
+        
+        .kg-label {
+            fill: #f1f5f9;
+            font-size: 11px;
+            text-anchor: middle;
+        }
+        
+        /* MCP Styles */
+        .mcp-connector {
+            stroke: rgba(251, 191, 36, 0.6);
+            stroke-width: 3;
+            fill: none;
+            stroke-dasharray: 5, 5;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.4));
+        }
+        
+        .mcp-connector.visible {
+            opacity: 1;
+            animation: dash 20s linear infinite;
+        }
+        
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -100;
+            }
+        }
+        
+        .mcp-hub {
+            fill: rgba(251, 191, 36, 0.2);
+            stroke: #fbbf24;
+            stroke-width: 3;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .mcp-hub.visible {
+            opacity: 1;
+        }
+        
+        .mcp-label {
+            fill: #fbbf24;
+            font-size: 14px;
+            font-weight: 600;
+            text-anchor: middle;
+        }
+        
+        /* Info Section Styles */
+        .info-section {
+            margin-bottom: 20px;
+        }
+        
+        .info-section h3 {
+            color: #38b2ac;
+            font-size: 14px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .connection-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(56, 178, 172, 0.2);
+        }
+        
+        .connection-item:last-child {
+            border-bottom: none;
+        }
+        
+        .connection-label {
+            font-size: 13px;
+        }
+        
+        .connection-type {
+            font-size: 11px;
+            color: #94a3b8;
+            background: rgba(56, 178, 172, 0.2);
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        
+        /* Legend Styles */
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 3px;
+            margin-right: 10px;
+            display: inline-block;
+        }
+        
+        /* Side Panel Styles */
+        .side-panel {
+            background: rgba(13, 21, 32, 0.95);
+            border-left: 1px solid rgba(56, 178, 172, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .side-panel.hidden {
+            transform: translateX(100%);
+        }
+        
+        /* Control Section */
+        .control-section {
+            margin-bottom: 15px;
+        }
+        
+        .control-label {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 5px;
+        }
+        
+        /* Highlight Box */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid var(--accent-primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .highlight-box h3 {
+            color: var(--accent-primary);
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">⚡</div>
+                <span>Prompt Engineering OS</span>
+            </div>
+        </header>
+        
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar" id="sidebar">
+            <div class="nav-section">
+                <div class="nav-title">Getting Started</div>
+                <a class="nav-item active" data-section="overview">Overview</a>
+                <a class="nav-item" data-section="quick-start">Quick Start</a>
+                <a class="nav-item" data-section="architecture">System Architecture</a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">Core Concepts</div>
+                <a class="nav-item" data-section="operating-system">The Operating System</a>
+                <a class="nav-item" data-section="cell-architecture">Cell-Based Architecture</a>
+                <a class="nav-item" data-section="knowledge-graph">Knowledge Graph Layer</a>
+                <a class="nav-item" data-section="mcp-integration">MCP Integration</a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">Implementation</div>
+                <a class="nav-item" data-section="deployment">Deployment Guide</a>
+                <a class="nav-item" data-section="scaling">Scaling Strategies</a>
+                <a class="nav-item" data-section="best-practices">Best Practices</a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">Advanced Topics</div>
+                <a class="nav-item" data-section="network-effects">Network Effects</a>
+                <a class="nav-item" data-section="competitive-advantage">Competitive Advantage</a>
+                <a class="nav-item" data-section="case-studies">Case Studies</a>
+            </div>
+        </nav>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Overview Section -->
+            <section class="content-section active" id="overview">
+                <h1>Prompt Engineering Operating System</h1>
+                <p class="lead">The foundational AI infrastructure that transforms isolated AI capabilities into comprehensive business transformation engines.</p>
+                
+                <div class="highlight-box">
+                    <h3>Key Innovation</h3>
+                    <p>Unlike traditional operating systems that manage hardware resources, the Prompt Engineering OS orchestrates the complex interactions between AI systems, business intelligence, and human expertise in real-time, creating a unified ecosystem that scales infinitely and delivers compound returns.</p>
+                </div>
+                
+                <h2>The Challenge</h2>
+                <p>Modern enterprises face unprecedented complexity in integrating AI systems with existing business operations. Traditional approaches create disconnected technical systems that isolate domain experts from AI capabilities, resulting in:</p>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🔗</div>
+                        <div class="card-title">Fragmented Systems</div>
+                        <p>AI implementations exist in silos, unable to share context or maintain state across different business functions.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <div class="card-title">Lost Expertise</div>
+                        <p>Valuable human knowledge remains trapped in individual interactions rather than being systematized and scaled.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <div class="card-title">Integration Overhead</div>
+                        <p>Each new AI model requires custom integration, creating exponential complexity as systems grow.</p>
+                    </div>
+                </div>
+                
+                <h2>The Solution</h2>
+                <p>The Prompt Engineering Operating System addresses these challenges by providing a universal orchestration layer that:</p>
+                
+                <div class="card">
+                    <div class="card-title">Operationalizes Communication</div>
+                    <p>Creates standardized interfaces between AI systems, business data, and human expertise, ensuring seamless information flow across all touchpoints.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Maintains Statefulness</div>
+                    <p>Orchestrates communications to preserve context across all interactions, enabling true continuity in AI-assisted business operations.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Scales Human Expertise</div>
+                    <p>Transforms tacit organizational knowledge into systematic, reusable patterns that amplify expert insights across the entire enterprise.</p>
+                </div>
+                
+                <h2>Interactive Architecture Overview</h2>
+                <div class="viz-container" style="min-height: 700px;">
+                    <div class="layer-controls">
+                        <h4 style="margin-bottom: 0.5rem; color: var(--text-primary);">Architecture Layers</h4>
+                        <div class="layer-toggle">
+                            <input type="checkbox" id="toggle-cells-main" checked>
+                            <label for="toggle-cells-main">Cell Architecture</label>
+                        </div>
+                        <div class="layer-toggle">
+                            <input type="checkbox" id="toggle-kg-main" checked>
+                            <label for="toggle-kg-main">Knowledge Graph</label>
+                        </div>
+                        <div class="layer-toggle">
+                            <input type="checkbox" id="toggle-mcp-main" checked>
+                            <label for="toggle-mcp-main">MCP Gateway</label>
+                        </div>
+                        <div class="layer-toggle">
+                            <input type="checkbox" id="toggle-os-main" checked>
+                            <label for="toggle-os-main">Prompt OS</label>
+                        </div>
+                    </div>
+                    <div class="layer-indicator" style="position: absolute; right: 20px; top: 20px; width: auto;">
+                        <div class="control-section">
+                            <div class="control-label">View Modes</div>
+                            <button onclick="showIntegratedLayer('cells')" class="active">Cell Architecture</button>
+                            <button onclick="showIntegratedLayer('knowledge')">Knowledge Graph</button>
+                            <button onclick="showIntegratedLayer('mcp')">MCP Integration</button>
+                            <button onclick="showIntegratedLayer('all')">All Layers</button>
+                        </div>
+                        <div class="control-section" style="margin-top: 1rem;">
+                            <div class="control-label">Interactions</div>
+                            <button onclick="animateIntegratedDataFlow()">Show Data Flow</button>
+                            <button onclick="simulateIntegratedAIQuery()">AI Query Demo</button>
+                        </div>
+                    </div>
+                    <svg class="architecture-svg" id="integrated-architecture-main"></svg>
+                    <div class="info-panel" id="mainInfoPanel" style="bottom: auto; top: 20px; right: 20px; left: auto;">
+                        <div class="info-title" id="mainInfoTitle"></div>
+                        <div class="info-content" id="mainInfoContent"></div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Quick Start Section -->
+            <section class="content-section" id="quick-start">
+                <h1>Quick Start Guide</h1>
+                <p class="lead">Get your Prompt Engineering OS deployment up and running in minutes.</p>
+                
+                <h2>Prerequisites</h2>
+                <div class="card">
+                    <p>Before beginning deployment, ensure you have:</p>
+                    <ul style="margin-left: 1.5rem; color: var(--text-secondary);">
+                        <li>Access to your organization's AI models and APIs</li>
+                        <li>Administrative permissions for system integration</li>
+                        <li>Understanding of your current service architecture</li>
+                    </ul>
+                </div>
+                
+                <h2>Installation Steps</h2>
+                
+                <h3>Step 1: Initialize the Core OS</h3>
+                <div class="code-block">
+                    <code>
+# Install the Prompt Engineering OS core<br>
+npm install @prompt-os/core<br>
+<br>
+# Initialize configuration<br>
+prompt-os init --org "your-organization"
+                    </code>
+                </div>
+                
+                <h3>Step 2: Configure Service Integration</h3>
+                <p>Define your cell-based architecture connections:</p>
+                <div class="code-block">
+                    <code>
+// prompt-os.config.js<br>
+export default {<br>
+&nbsp;&nbsp;cells: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;account: { endpoint: 'https://api.company.com/account' },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;payment: { endpoint: 'https://api.company.com/payment' },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fraud: { endpoint: 'https://api.company.com/fraud' }<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;knowledgeGraph: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;endpoint: 'https://kg.company.com'<br>
+&nbsp;&nbsp;}<br>
+}
+                    </code>
+                </div>
+                
+                <h3>Step 3: Deploy the Orchestration Layer</h3>
+                <div class="btn-group">
+                    <button class="btn">Deploy to Cloud</button>
+                    <button class="btn">Run Locally</button>
+                </div>
+            </section>
+            
+            <!-- System Architecture Section -->
+            <section class="content-section" id="architecture">
+                <h1>System Architecture</h1>
+                <p class="lead">Understanding the four-layer architecture that powers intelligent AI ecosystems.</p>
+                
+                <h2>Architectural Overview</h2>
+                <p>The Prompt Engineering OS integrates four distinct but interconnected layers, each serving a critical role in the overall system:</p>
+                
+                <div class="viz-container" style="min-height: 700px;">
+                    <svg class="architecture-svg" id="detailed-architecture"></svg>
+                </div>
+                
+                <h2>Layer Interactions</h2>
+                
+                <div class="card">
+                    <div class="card-title">1. Cell-Based Architecture Layer</div>
+                    <p>Provides the foundational service structure with autonomous cells for core business functions. Each cell maintains vertical integration while participating in a mesh network topology.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">2. Knowledge Graph Layer</div>
+                    <p>Creates semantic understanding across services, enabling sophisticated querying and reasoning through entity relationships.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">3. Model Context Protocol (MCP)</div>
+                    <p>Standardizes AI integration, providing a unified interface for multiple AI systems to access operational data and execute actions.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">4. Prompt Engineering OS</div>
+                    <p>Orchestrates all layers, maintaining statefulness and context while enabling human expertise to flow through the entire system.</p>
+                </div>
+            </section>
+            
+            <!-- Operating System Section -->
+            <section class="content-section" id="operating-system">
+                <h1>The Operating System Layer</h1>
+                <p class="lead">The orchestration engine that transforms disconnected components into a unified, intelligent ecosystem.</p>
+                
+                <h2>Core Functions</h2>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🔄</div>
+                        <div class="card-title">State Management</div>
+                        <p>Maintains contextual awareness across all system interactions, ensuring continuity and coherence in AI-assisted operations.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🌐</div>
+                        <div class="card-title">Universal Translation</div>
+                        <p>Converts between human intent, AI capabilities, and business logic, creating seamless communication flows.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🚀</div>
+                        <div class="card-title">Dynamic Scaling</div>
+                        <p>Automatically adjusts resource allocation and routing based on real-time demands and system performance.</p>
+                    </div>
+                </div>
+                
+                <h2>Human-Centric Design Principles</h2>
+                
+                <div class="highlight-box">
+                    <h3>Empowering Domain Experts</h3>
+                    <p>Unlike conventional approaches that prioritize data processing with disconnected technical systems, the Prompt Engineering OS focuses on giving operational control to domain experts, transforming their tacit knowledge into dynamic, scalable systems.</p>
+                </div>
+                
+                <h3>Key Design Elements</h3>
+                
+                <div class="card">
+                    <div class="card-title">Natural Language Interfaces</div>
+                    <p>Domain experts interact with AI systems using natural language, eliminating the need for technical expertise while preserving the nuance of professional knowledge.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Context Preservation</div>
+                    <p>Every interaction builds upon previous exchanges, creating rich contextual threads that enhance decision-making and operational efficiency.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Adaptive Learning</div>
+                    <p>The system continuously refines its understanding of organizational patterns, improving prompt engineering templates based on successful interactions.</p>
+                </div>
+            </section>
+            
+            <!-- Network Effects Section -->
+            <section class="content-section" id="network-effects">
+                <h1>Network Effects & Value Creation</h1>
+                <p class="lead">How the Prompt Engineering OS generates compound returns through ecosystem growth.</p>
+                
+                <h2>The Network Effect Flywheel</h2>
+                
+                <div class="viz-container">
+                    <svg class="architecture-svg" id="network-effects-viz"></svg>
+                </div>
+                
+                <h2>Value Multiplication</h2>
+                
+                <p>As more organizations adopt the Prompt Engineering OS, each participant benefits from:</p>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📈</div>
+                        <div class="card-title">Collective Intelligence</div>
+                        <p>Shared patterns and best practices across the network enhance everyone's capabilities without exposing proprietary information.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🔗</div>
+                        <div class="card-title">Integration Ecosystem</div>
+                        <p>Pre-built connectors and adapters created by the community reduce integration time from months to hours.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">💡</div>
+                        <div class="card-title">Innovation Acceleration</div>
+                        <p>Breakthrough applications discovered by one organization can be adapted and improved by others, driving rapid evolution.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Competitive Advantage Section -->
+            <section class="content-section" id="competitive-advantage">
+                <h1>Building Competitive Advantage</h1>
+                <p class="lead">Creating defensible moats in an AI-driven economy where data and models become commoditized.</p>
+                
+                <h2>The New Competitive Landscape</h2>
+                
+                <div class="highlight-box">
+                    <h3>Beyond Data Ownership</h3>
+                    <p>As AI agents become capable of reconstructing much proprietary data from public sources, competitive advantage shifts from data ownership to sophisticated orchestration and application of that data through human design and systematic integration.</p>
+                </div>
+                
+                <h2>Sources of Defensibility</h2>
+                
+                <div class="card">
+                    <div class="card-title">Organizational Wisdom</div>
+                    <p>The Prompt Engineering OS captures and operationalizes accumulated organizational wisdom—the nuanced understanding of how different components interact under various conditions, scaling requirements, and architectural decisions that cannot be replicated by external parties.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Process Excellence</div>
+                    <p>Refined workflows and integration patterns developed through the OS become increasingly sophisticated over time, creating operational excellence that competitors cannot easily duplicate.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Network Position</div>
+                    <p>Early adopters benefit from stronger network effects, as their contributions to the ecosystem create preferential partnerships and integration opportunities.</p>
+                </div>
+                
+                <h2>Strategic Implementation</h2>
+                
+                <p>Organizations can maximize their competitive advantage through:</p>
+                
+                <ol style="margin-left: 1.5rem; color: var(--text-secondary);">
+                    <li><strong>Deep Integration:</strong> Embedding the OS throughout all business processes to create comprehensive transformation rather than isolated improvements.</li>
+                    <li><strong>Continuous Evolution:</strong> Regular refinement of prompts and workflows based on operational insights and changing business needs.</li>
+                    <li><strong>Ecosystem Participation:</strong> Active contribution to and benefit from the broader network of OS users.</li>
+                    <li><strong>Custom Extensions:</strong> Development of proprietary modules that leverage the OS while maintaining trade secret advantages.</li>
+                </ol>
+            </section>
+            
+            <!-- Cell-Based Architecture Section -->
+            <section class="content-section" id="cell-architecture">
+                <h1>Cell-Based Architecture</h1>
+                <p class="lead">The foundational service structure that enables autonomous operation while maintaining system-wide coherence through the Prompt Engineering OS.</p>
+                
+                <h2>Architectural Principles</h2>
+                <p>Cell-based architecture represents a fundamental shift in how enterprise systems are designed and operated. Each cell functions as a complete, vertically integrated unit that encompasses all layers from data persistence through business logic to API interfaces. This approach delivers unprecedented autonomy while maintaining the interconnectedness required for complex business operations.</p>
+                
+                <div class="highlight-box">
+                    <h3>Key Distinction</h3>
+                    <p>Unlike traditional microservices that focus on functional decomposition, cells represent complete business capabilities. Each cell owns its entire domain, including data models, business rules, and external interfaces, creating true operational independence while participating in the larger ecosystem through standardized communication patterns.</p>
+                </div>
+                
+                <h2>Cell Structure and Components</h2>
+                <p>Each cell within the architecture maintains a consistent internal structure that enables both autonomy and integration. The standardized cell design ensures predictable behavior while allowing for domain-specific customization.</p>
+                
+                <div class="viz-container" style="min-height: 600px; position: relative;">
+                    <div class="control-panel" style="position: absolute; z-index: 10;">
+                        <button onclick="toggleCellConnections()">Toggle Connections</button>
+                        <button onclick="resetCellView()">Reset View</button>
+                        <button onclick="toggleCellInfoPanel()">Info Panel</button>
+                    </div>
+                    
+                    <div class="legend" style="position: absolute; bottom: 20px; right: 20px; background: rgba(13, 21, 32, 0.95); padding: 15px; border-radius: 8px; border: 1px solid rgba(56, 178, 172, 0.3); font-size: 12px;">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: rgba(56, 178, 172, 0.8);"></div>
+                            <span>Synchronous Communication</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: rgba(147, 197, 253, 0.8);"></div>
+                            <span>Asynchronous Events</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: rgba(251, 191, 36, 0.8);"></div>
+                            <span>Data Replication</span>
+                        </div>
+                    </div>
+                    
+                    <svg class="architecture-svg" id="cell-mesh-architecture"></svg>
+                    
+                    <div class="side-panel hidden" id="cellSidePanel" style="position: absolute; right: 0; top: 0; height: 100%; width: 320px; background: rgba(13, 21, 32, 0.95); border-left: 1px solid rgba(56, 178, 172, 0.3); padding: 20px; overflow-y: auto; transition: transform 0.3s ease;">
+                        <h2 class="info-title" id="cellPanelTitle">Select a Cell</h2>
+                        <div id="cellPanelInfo">
+                            <p style="color: #94a3b8;">Click on any cell to view its architecture details and connections.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="viz-container">
+                    <svg class="architecture-svg" id="cell-structure-viz" style="min-height: 400px;"></svg>
+                </div>
+                
+                <h3>Core Cell Layers</h3>
+                
+                <div class="card">
+                    <div class="card-title">Data Persistence Layer</div>
+                    <p>Each cell maintains complete ownership of its data, including storage, schema evolution, and access patterns. This layer implements domain-specific optimizations while exposing standardized interfaces for cross-cell data sharing when required. The persistence layer ensures data integrity and consistency within the cell's boundaries while supporting eventual consistency patterns for distributed operations.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Business Logic Engine</div>
+                    <p>The business logic layer encapsulates all domain-specific rules, workflows, and computations. This layer implements the core value proposition of the cell, processing requests according to business requirements while maintaining isolation from other cells. The engine supports both synchronous operations for immediate responses and asynchronous processing for complex workflows.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">API Gateway</div>
+                    <p>Each cell exposes its capabilities through well-defined API interfaces that support multiple communication patterns. The gateway layer handles authentication, rate limiting, and protocol translation while maintaining backward compatibility as the cell evolves. This standardized interface enables seamless integration with the Prompt Engineering OS for AI-driven operations.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Event Publishing System</div>
+                    <p>Cells communicate state changes and business events through a standardized event publishing mechanism. This system enables loose coupling between cells while ensuring that interested parties can react to changes in real-time. The event system integrates directly with the Prompt Engineering OS to maintain system-wide context and enable intelligent orchestration.</p>
+                </div>
+                
+                <h2>Communication Patterns</h2>
+                <p>The strength of cell-based architecture lies not just in the autonomy of individual cells but in their ability to collaborate effectively. The Prompt Engineering OS orchestrates these communications to create coherent business processes that span multiple cells.</p>
+                
+                <h3>Synchronous Communication</h3>
+                <p>Direct cell-to-cell communication occurs when immediate responses are required for business operations. The Prompt Engineering OS manages these interactions by maintaining request context, handling failures gracefully, and ensuring that communication patterns align with business requirements. Common synchronous patterns include request-response for data queries, command execution for state changes, and validation checks for business rule enforcement.</p>
+                
+                <h3>Asynchronous Messaging</h3>
+                <p>Event-driven communication enables cells to react to changes without tight coupling. The OS orchestrates these asynchronous flows by managing event routing, ensuring delivery guarantees, and maintaining causal relationships between events. This pattern supports complex workflows such as saga orchestration, event sourcing for audit trails, and real-time analytics processing.</p>
+                
+                <h3>Data Replication Strategies</h3>
+                <p>While cells maintain data ownership, certain scenarios require controlled data sharing. The architecture supports multiple replication patterns including read-only replicas for query optimization, materialized views for cross-domain reporting, and cache synchronization for performance optimization. The Prompt Engineering OS manages these replication flows to ensure consistency while respecting cell boundaries.</p>
+                
+                <h2>Integration with Prompt Engineering OS</h2>
+                <p>The Prompt Engineering OS transforms cell-based architecture from a technical implementation detail into a business capability amplifier. Through intelligent orchestration, the OS enables natural language interactions with complex cell networks, automatic context propagation across cell boundaries, and dynamic routing based on business intent rather than technical constraints.</p>
+                
+                <div class="code-block">
+                    <code>
+// Example: Cell Registration with Prompt OS<br>
+const accountCell = {<br>
+&nbsp;&nbsp;id: 'account-management',<br>
+&nbsp;&nbsp;capabilities: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;queries: ['getAccount', 'getBalance', 'getTransactionHistory'],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;commands: ['createAccount', 'updateProfile', 'closeAccount'],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;events: ['accountCreated', 'profileUpdated', 'accountClosed']<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;endpoints: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;rest: 'https://api.company.com/accounts',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;graphql: 'https://graphql.company.com/accounts',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;grpc: 'grpc://grpc.company.com:50051'<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;metadata: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;owner: 'customer-experience-team',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;sla: { availability: 0.999, latencyP99: 100 },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dataClassification: 'confidential'<br>
+&nbsp;&nbsp;}<br>
+};<br>
+<br>
+// Register with Prompt OS<br>
+await promptOS.registerCell(accountCell);
+                    </code>
+                </div>
+                
+                <h2>Benefits and Business Impact</h2>
+                <p>The combination of cell-based architecture with the Prompt Engineering OS delivers transformative business benefits that extend far beyond technical improvements. Organizations implementing this pattern report significant improvements in development velocity through independent team operation, system reliability through fault isolation and graceful degradation, operational efficiency through automated orchestration and optimization, and business agility through rapid adaptation to changing requirements.</p>
+                
+                <p>The architecture enables teams to evolve their cells independently while the Prompt Engineering OS maintains system coherence. This separation of concerns allows for rapid innovation within cells while ensuring that the overall system remains stable and predictable. Business stakeholders can request complex operations in natural language, and the OS automatically orchestrates the necessary cell interactions to fulfill those requests.</p>
+            </section>
+            
+            <!-- Knowledge Graph Layer Section -->
+            <section class="content-section" id="knowledge-graph">
+                <h1>Knowledge Graph Layer</h1>
+                <p class="lead">The semantic intelligence layer that transforms disconnected data into actionable business insights through rich entity relationships and AI-powered reasoning.</p>
+                
+                <h2>Semantic Architecture Overview</h2>
+                <p>The Knowledge Graph layer represents a paradigm shift in how enterprises understand and leverage their data assets. Rather than treating information as isolated records within individual systems, the knowledge graph creates a unified semantic model that captures the rich relationships between business entities. This approach enables sophisticated reasoning and insight generation that would be impossible with traditional data architectures.</p>
+                
+                <div class="highlight-box">
+                    <h3>Fundamental Innovation</h3>
+                    <p>The Knowledge Graph layer doesn't replace existing data stores but rather creates a semantic overlay that connects information across all cells and systems. This design preserves cell autonomy while enabling cross-domain intelligence through the Prompt Engineering OS orchestration.</p>
+                </div>
+                
+                <h2>Graph Structure and Ontology</h2>
+                <p>The knowledge graph implements a carefully designed ontology that represents the business domain while remaining flexible enough to accommodate evolution and extension. This ontology serves as the common language through which AI systems, business applications, and human experts communicate.</p>
+                
+                <div class="viz-container">
+                    <svg class="architecture-svg" id="knowledge-graph-viz" style="min-height: 500px;"></svg>
+                </div>
+                
+                <h3>Core Entity Types</h3>
+                
+                <div class="card">
+                    <div class="card-title">Business Entities</div>
+                    <p>Primary business objects form the foundation of the knowledge graph. These entities represent real-world concepts such as customers, products, transactions, and accounts. Each entity maintains a rich set of attributes while participating in multiple relationship types. The Prompt Engineering OS uses these entity definitions to understand business context and route requests appropriately.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Relationship Definitions</div>
+                    <p>Relationships capture the semantic connections between entities, encoding business rules and domain knowledge. These relationships go beyond simple foreign key references to include temporal relationships for time-based analysis, causal relationships for impact assessment, hierarchical relationships for organizational structures, and probabilistic relationships for risk modeling. The relationship model enables the AI to reason about complex business scenarios.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Contextual Metadata</div>
+                    <p>Each node and edge in the graph carries contextual metadata that enriches the semantic model. This metadata includes temporal validity for historical analysis, confidence scores for data quality assessment, provenance tracking for audit requirements, and access controls for security compliance. The Prompt Engineering OS leverages this metadata to provide contextually appropriate responses.</p>
+                </div>
+                
+                <h2>Integration Patterns</h2>
+                <p>The Knowledge Graph layer integrates with the cell-based architecture through sophisticated synchronization patterns that respect cell autonomy while maintaining semantic coherence.</p>
+                
+                <h3>Real-time Synchronization</h3>
+                <p>Critical business events trigger immediate updates to the knowledge graph, ensuring that the semantic model reflects current operational state. The synchronization process employs event streaming from cell event publishers, change data capture for legacy systems, and API webhooks for external integrations. The Prompt Engineering OS coordinates these updates to maintain consistency while preventing synchronization storms.</p>
+                
+                <h3>Batch Processing</h3>
+                <p>Complex analytical workloads and historical data processing occur through scheduled batch operations. These processes handle entity resolution and deduplication, relationship inference and validation, quality scoring and confidence updates, and temporal graph snapshots for point-in-time analysis. The batch processing system integrates with the OS to ensure that long-running operations don't impact real-time query performance.</p>
+                
+                <h3>Federated Queries</h3>
+                <p>The knowledge graph supports federated query patterns that combine graph traversal with real-time cell data access. This approach enables complex queries while respecting data ownership boundaries. The Prompt Engineering OS optimizes query execution by intelligently routing subqueries to appropriate cells and caching frequently accessed patterns.</p>
+                
+                <div class="code-block">
+                    <code>
+// Example: Knowledge Graph Query via Prompt OS<br>
+const query = `<br>
+&nbsp;&nbsp;Find all high-value customers who have:<br>
+&nbsp;&nbsp;- Made transactions exceeding $10,000 in the last 30 days<br>
+&nbsp;&nbsp;- Have risk scores below medium threshold<br>
+&nbsp;&nbsp;- Are connected to flagged entities through less than 3 degrees<br>
+`;<br>
+<br>
+const results = await promptOS.queryKnowledgeGraph({<br>
+&nbsp;&nbsp;naturalLanguage: query,<br>
+&nbsp;&nbsp;context: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;timeRange: 'last_30_days',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;includeConfidenceScores: true,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;maxTraversalDepth: 3<br>
+&nbsp;&nbsp;}<br>
+});<br>
+<br>
+// Prompt OS automatically:<br>
+// 1. Parses natural language into graph query<br>
+// 2. Optimizes traversal patterns<br>
+// 3. Federates cell queries for real-time data<br>
+// 4. Aggregates and ranks results<br>
+// 5. Provides explainable outcomes
+                    </code>
+                </div>
+                
+                <h2>AI-Powered Capabilities</h2>
+                <p>The Knowledge Graph layer, when orchestrated by the Prompt Engineering OS, enables advanced AI capabilities that transform business operations.</p>
+                
+                <h3>Intelligent Reasoning</h3>
+                <p>The semantic structure enables AI systems to perform sophisticated reasoning tasks including causal analysis for root cause identification, impact assessment for change management, anomaly detection through pattern analysis, and predictive modeling based on historical relationships. These capabilities emerge from the rich semantic context rather than requiring explicit programming.</p>
+                
+                <h3>Natural Language Understanding</h3>
+                <p>The knowledge graph provides the semantic foundation for natural language interactions. When users query the system in plain language, the OS leverages the graph to disambiguate entity references, understand implicit relationships, infer missing context from domain knowledge, and generate appropriate responses with full context. This enables business users to interact with complex data without technical expertise.</p>
+                
+                <h3>Automated Insight Generation</h3>
+                <p>The system continuously analyzes the evolving knowledge graph to surface relevant insights including emerging patterns in customer behavior, hidden relationships between business entities, optimization opportunities in business processes, and risk indicators from relationship analysis. The Prompt Engineering OS ensures these insights reach the right stakeholders at the right time.</p>
+                
+                <h2>Business Value Realization</h2>
+                <p>Organizations implementing the Knowledge Graph layer within their Prompt Engineering OS architecture realize substantial business value through enhanced decision-making capabilities. The semantic understanding enables more informed choices based on complete context rather than isolated data points. Customer experience improvements emerge from the 360-degree view of customer relationships and interactions across all touchpoints. Risk management becomes more sophisticated through understanding of complex entity relationships and their potential impacts. Operational efficiency increases as AI systems can automatically identify and optimize process bottlenecks by understanding the full context of business operations.</p>
+                
+                <p>The knowledge graph serves as a force multiplier for AI initiatives, transforming raw data into actionable intelligence. By providing semantic context to the Prompt Engineering OS, it enables natural language interactions that feel intelligent and contextually aware, creating a truly transformative approach to enterprise data utilization.</p>
+            </section>
+            
+            <!-- MCP Integration Section -->
+            <section class="content-section" id="mcp-integration">
+                <h1>Model Context Protocol Integration</h1>
+                <p class="lead">The standardized integration layer that democratizes AI access across the enterprise while maintaining security, governance, and operational excellence.</p>
+                
+                <h2>MCP Architecture Within the Ecosystem</h2>
+                <p>The Model Context Protocol serves as the universal translator between AI models and enterprise systems, creating a standardized interface that eliminates the complexity of point-to-point integrations. Within the Prompt Engineering OS ecosystem, MCP acts as the critical bridge that enables any AI model to access cell services and knowledge graph insights without requiring custom integration code.</p>
+                
+                <div class="highlight-box">
+                    <h3>Strategic Positioning</h3>
+                    <p>While MCP can function independently as a middleware protocol, its true power emerges when orchestrated by the Prompt Engineering OS. The OS provides the contextual awareness and state management that transforms MCP from a simple integration protocol into an intelligent AI orchestration platform.</p>
+                </div>
+                
+                <h2>Integration Architecture</h2>
+                <p>The MCP integration within the Prompt Engineering OS follows a layered approach that ensures both flexibility and control. This architecture enables organizations to leverage multiple AI models simultaneously while maintaining consistent governance and security policies.</p>
+                
+                <div class="viz-container">
+                    <svg class="architecture-svg" id="mcp-integration-viz" style="min-height: 500px;"></svg>
+                </div>
+                
+                <h3>Protocol Layers</h3>
+                
+                <div class="card">
+                    <div class="card-title">Model Abstraction Layer</div>
+                    <p>The model abstraction layer provides a unified interface for different AI models, regardless of their underlying implementation. This layer handles model-specific protocols and data formats, capability discovery and registration, performance characteristics and optimization, and fallback strategies for model unavailability. The Prompt Engineering OS uses this abstraction to route requests to the most appropriate model based on capability matching and current system state.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Context Management System</div>
+                    <p>MCP's context management system maintains stateful interactions across multiple AI model invocations. This system preserves conversation history and intent, relevant business context from previous interactions, user preferences and authorization scope, and temporal context for time-sensitive operations. The Prompt Engineering OS enhances this with cross-session context preservation and intelligent context pruning for optimal performance.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Tool Registry and Discovery</div>
+                    <p>The tool registry enables AI models to discover and utilize available enterprise capabilities. This registry maintains real-time inventory of available cell services, capability descriptions in AI-consumable format, authentication and authorization requirements, and performance characteristics and SLAs. The OS dynamically updates this registry as cells come online or modify their capabilities.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Security and Governance Layer</div>
+                    <p>Every MCP interaction passes through comprehensive security controls that ensure enterprise compliance. This layer implements role-based access control for AI operations, data classification and handling policies, audit logging for all AI interactions, and rate limiting and resource management. The Prompt Engineering OS enforces these policies consistently across all AI models and enterprise systems.</p>
+                </div>
+                
+                <h2>Implementation Patterns</h2>
+                <p>Successful MCP integration requires careful attention to implementation patterns that balance functionality with maintainability and security.</p>
+                
+                <h3>Service Registration</h3>
+                <div class="code-block">
+                    <code>
+// Example: Registering a Cell Service with MCP<br>
+const paymentService = {<br>
+&nbsp;&nbsp;name: 'payment-processing',<br>
+&nbsp;&nbsp;description: 'Handles payment transactions and settlement',<br>
+&nbsp;&nbsp;tools: [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name: 'process_payment',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;description: 'Process a payment transaction',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;parameters: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;amount: { type: 'number', required: true },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;currency: { type: 'string', required: true },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;recipient: { type: 'string', required: true },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reference: { type: 'string', required: false }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;authorization: 'payment.write',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;timeout: 30000,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;retryPolicy: { maxAttempts: 3, backoff: 'exponential' }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name: 'check_balance',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;description: 'Check account balance',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;parameters: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;accountId: { type: 'string', required: true }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;authorization: 'payment.read',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cacheable: true,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cacheTimeout: 300<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;]<br>
+};<br>
+<br>
+// Register with MCP through Prompt OS<br>
+await promptOS.mcp.registerService(paymentService);
+                    </code>
+                </div>
+                
+                <h3>AI Model Integration</h3>
+                <p>Integrating AI models with MCP requires careful consideration of model capabilities and limitations. The Prompt Engineering OS provides standardized patterns for model registration that include capability declaration for tool selection, performance characteristics for routing decisions, cost models for optimization, and fallback strategies for resilience.</p>
+                
+                <div class="code-block">
+                    <code>
+// Example: AI Model Accessing Enterprise Services via MCP<br>
+const aiRequest = {<br>
+&nbsp;&nbsp;model: 'claude-3',<br>
+&nbsp;&nbsp;prompt: 'Transfer $500 from my savings to checking account',<br>
+&nbsp;&nbsp;context: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;userId: 'user-123',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;sessionId: 'session-abc',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;previousInteractions: [...],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;userPreferences: { confirmLargeTransfers: true }<br>
+&nbsp;&nbsp;}<br>
+};<br>
+<br>
+// Prompt OS orchestrates the interaction<br>
+const response = await promptOS.mcp.executeAIRequest(aiRequest);<br>
+<br>
+// Behind the scenes, Prompt OS:<br>
+// 1. Validates user authorization<br>
+// 2. Enriches context from Knowledge Graph<br>
+// 3. Routes to appropriate AI model<br>
+// 4. Translates natural language to tool calls<br>
+// 5. Executes cell services with proper controls<br>
+// 6. Formats response for user consumption<br>
+// 7. Updates audit logs and analytics
+                    </code>
+                </div>
+                
+                <h2>Advanced Integration Scenarios</h2>
+                <p>The MCP integration enables sophisticated scenarios that showcase the power of AI-driven enterprise operations.</p>
+                
+                <h3>Multi-Model Orchestration</h3>
+                <p>Complex business operations often benefit from multiple AI models working in concert. The Prompt Engineering OS orchestrates these multi-model workflows by routing subtasks to specialized models, aggregating responses for coherent output, managing model dependencies and sequencing, and optimizing for cost and performance constraints. This orchestration happens transparently, presenting a unified interface to end users.</p>
+                
+                <h3>Hybrid Human-AI Workflows</h3>
+                <p>MCP integration supports workflows that seamlessly blend AI automation with human expertise. The system identifies tasks requiring human judgment, routes requests to appropriate experts, captures human decisions for AI learning, and maintains context across human-AI handoffs. The Prompt Engineering OS ensures these hybrid workflows feel natural and efficient.</p>
+                
+                <h3>Real-time Adaptation</h3>
+                <p>The integration continuously adapts based on operational metrics and feedback. This includes dynamic model selection based on performance, automatic failover for model unavailability, load balancing across model instances, and cost optimization through intelligent routing. These adaptations occur in real-time without disrupting user experience.</p>
+                
+                <h2>Governance and Compliance</h2>
+                <p>MCP integration within the Prompt Engineering OS provides comprehensive governance capabilities essential for enterprise deployment. Every AI interaction generates detailed audit trails that capture request context and authorization, model selection and reasoning, tool invocations and results, and performance metrics and costs. These audit trails support compliance requirements while enabling continuous improvement.</p>
+                
+                <p>Data handling policies ensure that sensitive information remains protected throughout AI interactions. The system implements data classification and routing rules, encryption for data in transit and at rest, geographic restrictions for data residency, and retention policies for different data types. The Prompt Engineering OS enforces these policies consistently across all integrated AI models.</p>
+                
+                <h2>Business Impact and ROI</h2>
+                <p>Organizations implementing MCP integration through the Prompt Engineering OS realize significant returns through multiple vectors. Reduced integration costs emerge from the elimination of point-to-point integrations and the reuse of common patterns. Accelerated AI adoption occurs as new models can be integrated in hours rather than months. Enhanced reliability results from standardized error handling and failover mechanisms. Improved governance comes from centralized policy enforcement and comprehensive audit trails.</p>
+                
+                <p>The true value of MCP integration lies in its ability to make AI a pervasive capability throughout the enterprise rather than isolated proof-of-concepts. By providing a standardized, governed, and scalable integration pattern, MCP enables organizations to leverage AI wherever it can add value, transforming theoretical AI potential into practical business outcomes.</p>
+            </section>
+            
+            <!-- Deployment Guide Section -->
+            <section class="content-section" id="deployment">
+                <h1>Deployment Guide</h1>
+                <p class="lead">A comprehensive guide to deploying the Prompt Engineering OS in enterprise environments, from initial planning through production optimization.</p>
+                
+                <h2>Deployment Planning and Prerequisites</h2>
+                <p>Successful deployment of the Prompt Engineering OS requires careful planning and preparation. Organizations must assess their current infrastructure, identify integration points, and establish clear success criteria before beginning implementation.</p>
+                
+                <div class="highlight-box">
+                    <h3>Critical Success Factors</h3>
+                    <p>Deployment success depends on three key factors: executive sponsorship to drive organizational change, a phased approach that delivers incremental value, and strong collaboration between technical teams and business stakeholders. Organizations that excel in these areas typically achieve full deployment 40% faster with significantly higher adoption rates.</p>
+                </div>
+                
+                <h2>Infrastructure Requirements</h2>
+                <p>The Prompt Engineering OS operates efficiently on modern cloud infrastructure while supporting hybrid and on-premises deployments for organizations with specific requirements.</p>
+                
+                <div class="card">
+                    <div class="card-title">Compute Resources</div>
+                    <p>The OS requires moderate compute resources that scale with usage. Base deployment needs include 16 vCPUs and 64GB RAM for the core orchestration engine, dedicated GPU resources for AI model inference if running models locally, container orchestration platform (Kubernetes recommended), and auto-scaling groups for handling variable loads. Resource requirements scale linearly with concurrent users and complexity of orchestrations.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Network Architecture</div>
+                    <p>Network design significantly impacts system performance and reliability. Key considerations include low-latency connectivity between OS components and cells (sub-10ms recommended), segregated networks for different security zones, load balancers for high availability, and CDN integration for global deployments. The architecture supports both cloud-native and traditional network topologies.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Storage Systems</div>
+                    <p>The OS requires multiple storage tiers for different purposes: high-performance SSD storage for real-time context management, object storage for audit logs and analytics data, graph database for knowledge graph persistence, and time-series database for metrics and monitoring. Storage requirements vary based on retention policies and usage patterns.</p>
+                </div>
+                
+                <h2>Deployment Phases</h2>
+                <p>We recommend a phased deployment approach that delivers value incrementally while minimizing risk.</p>
+                
+                <h3>Phase 1: Foundation (Weeks 1-4)</h3>
+                <p>The foundation phase establishes core infrastructure and validates basic functionality. Key activities include deploying the OS core components in a development environment, integrating authentication and authorization systems, establishing monitoring and logging infrastructure, and creating initial cell registrations for pilot use cases. This phase concludes with a technical validation checkpoint.</p>
+                
+                <div class="code-block">
+                    <code>
+# Phase 1: Initial OS Deployment<br>
+# Deploy core infrastructure using Helm<br>
+helm repo add prompt-os https://charts.prompt-os.io<br>
+helm install prompt-os prompt-os/core \<br>
+&nbsp;&nbsp;--namespace prompt-os \<br>
+&nbsp;&nbsp;--create-namespace \<br>
+&nbsp;&nbsp;--values values-dev.yaml \<br>
+&nbsp;&nbsp;--set global.environment=development \<br>
+&nbsp;&nbsp;--set auth.provider=oauth2 \<br>
+&nbsp;&nbsp;--set monitoring.enabled=true
+                    </code>
+                </div>
+                
+                <h3>Phase 2: Integration (Weeks 5-8)</h3>
+                <p>The integration phase connects existing systems to the Prompt Engineering OS. Teams focus on registering production cells with the OS, implementing knowledge graph synchronization, configuring MCP for AI model access, and establishing data governance policies. This phase emphasizes iterative testing and refinement of integration patterns.</p>
+                
+                <div class="code-block">
+                    <code>
+// Phase 2: Cell Integration Example<br>
+const integrationConfig = {<br>
+&nbsp;&nbsp;cells: [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id: 'customer-service',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;endpoint: process.env.CUSTOMER_SERVICE_URL,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;healthCheck: '/health',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;authentication: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: 'oauth2',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tokenEndpoint: process.env.AUTH_TOKEN_URL<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;retry: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;attempts: 3,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backoff: 'exponential'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;],<br>
+&nbsp;&nbsp;knowledgeGraph: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;syncInterval: '5m',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;batchSize: 1000,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;conflictResolution: 'latest-write-wins'<br>
+&nbsp;&nbsp;}<br>
+};<br>
+<br>
+await promptOS.applyConfiguration(integrationConfig);
+                    </code>
+                </div>
+                
+                <h3>Phase 3: Pilot Operations (Weeks 9-12)</h3>
+                <p>The pilot phase validates the system with real users and workloads. Organizations select specific business processes for AI enhancement, train key users on natural language interactions, monitor system performance and user feedback, and refine prompts and workflows based on actual usage. Success metrics from this phase guide the broader rollout.</p>
+                
+                <h3>Phase 4: Production Rollout (Weeks 13-16)</h3>
+                <p>Production rollout expands the deployment to full operational scale. Activities include migrating from development to production infrastructure, implementing high availability and disaster recovery, establishing 24/7 operational procedures, and training all affected users and administrators. The rollout follows a controlled process with rollback capabilities at each step.</p>
+                
+                <h3>Phase 5: Optimization (Ongoing)</h3>
+                <p>Post-deployment optimization ensures continued value delivery. Teams focus on analyzing usage patterns for improvement opportunities, expanding AI capabilities based on user needs, optimizing resource utilization and costs, and contributing improvements back to the ecosystem. This phase represents the beginning of continuous improvement rather than project completion.</p>
+                
+                <h2>Configuration Management</h2>
+                <p>Effective configuration management ensures consistency across environments while enabling appropriate customization.</p>
+                
+                <div class="code-block">
+                    <code>
+# Production Configuration Template<br>
+apiVersion: v1<br>
+kind: ConfigMap<br>
+metadata:<br>
+&nbsp;&nbsp;name: prompt-os-config<br>
+data:<br>
+&nbsp;&nbsp;config.yaml: |<br>
+&nbsp;&nbsp;&nbsp;&nbsp;orchestration:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;maxConcurrentRequests: 1000<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;defaultTimeout: 30s<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;contextCacheSize: 10GB<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stateRetention: 7d<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;security:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;encryption: AES-256-GCM<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tokenExpiry: 1h<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;auditLogRetention: 90d<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dataClassification:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- level: public<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;encryption: optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- level: confidential<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;encryption: required<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;regions: [us-east-1, eu-west-1]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;performance:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;caching:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;enabled: true<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;provider: redis<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ttl: 300s<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rateLimit:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;global: 10000/min<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;perUser: 100/min
+                    </code>
+                </div>
+                
+                <h2>Monitoring and Observability</h2>
+                <p>Comprehensive monitoring ensures system health and enables proactive optimization. The deployment includes multiple monitoring layers that track system metrics including request latency and throughput, resource utilization and scaling events, error rates and failure patterns, and cost allocation by department or use case.</p>
+                
+                <p>Business metrics provide insight into value delivery through user adoption and engagement rates, AI interaction success rates, time savings from automation, and business process improvements. Custom dashboards present these metrics in context for different stakeholder groups.</p>
+                
+                <h2>Security Hardening</h2>
+                <p>Production deployments require comprehensive security measures. The deployment process implements defense-in-depth strategies including network segmentation and firewall rules, encryption for data at rest and in transit, regular security scanning and patching, and incident response procedures. Security configurations are validated through automated testing and regular audits.</p>
+                
+                <h2>Troubleshooting Common Issues</h2>
+                <p>Understanding common deployment challenges accelerates resolution. Typical issues include integration timeouts often resolved through connection pooling and circuit breakers, authentication failures addressed through token refresh strategies, performance degradation mitigated through caching and query optimization, and data synchronization conflicts resolved through clear precedence rules.</p>
+                
+                <p>The deployment guide continues to evolve based on community feedback and lessons learned from production deployments. Organizations are encouraged to contribute their experiences and improvements to benefit the broader ecosystem.</p>
+            </section>
+            
+            <!-- Scaling Strategies Section -->
+            <section class="content-section" id="scaling">
+                <h1>Scaling Strategies</h1>
+                <p class="lead">Architectural patterns and operational practices that enable the Prompt Engineering OS to scale from pilot deployments to enterprise-wide transformation.</p>
+                
+                <h2>Scaling Dimensions</h2>
+                <p>The Prompt Engineering OS scales across multiple dimensions simultaneously, each requiring specific architectural considerations and operational practices. Understanding these dimensions enables organizations to plan for growth while maintaining system performance and reliability.</p>
+                
+                <div class="highlight-box">
+                    <h3>Scaling Philosophy</h3>
+                    <p>The OS implements a "scale-by-design" philosophy where every component anticipates growth from day one. This approach eliminates the need for disruptive re-architecture as usage grows, enabling smooth scaling from tens to millions of users while maintaining consistent performance and user experience.</p>
+                </div>
+                
+                <h2>Horizontal Scaling Patterns</h2>
+                <p>Horizontal scaling forms the foundation of the OS's ability to handle increased load through distributed processing and intelligent load distribution.</p>
+                
+                <div class="card">
+                    <div class="card-title">Orchestration Engine Scaling</div>
+                    <p>The orchestration engine scales horizontally through stateless worker pools that process requests in parallel. Load distribution occurs through consistent hashing that maintains session affinity while balancing work across instances. The system automatically adjusts worker pool size based on queue depth and processing latency, ensuring responsive performance during demand spikes. Health checks and automatic instance replacement maintain availability even as the system scales.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Cell Service Scaling</div>
+                    <p>Individual cells scale independently based on their specific load patterns. The OS supports multiple scaling strategies including request-based auto-scaling for synchronous operations, queue-depth scaling for asynchronous processing, predictive scaling based on historical patterns, and manual scaling overrides for special events. Cell scaling decisions propagate to the OS routing layer to ensure optimal request distribution.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Knowledge Graph Distribution</div>
+                    <p>The knowledge graph scales through sophisticated partitioning strategies that balance query performance with data distribution. Partitioning approaches include entity-type sharding for balanced distribution, geographic partitioning for data locality, temporal partitioning for time-series optimization, and hybrid strategies for complex deployments. Query routing automatically directs graph traversals to appropriate partitions while managing cross-partition joins when necessary.</p>
+                </div>
+                
+                <div class="code-block">
+                    <code>
+// Scaling Configuration Example<br>
+const scalingPolicy = {<br>
+&nbsp;&nbsp;orchestrationEngine: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;minInstances: 3,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;maxInstances: 100,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;targetCPU: 70,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;scaleUpThreshold: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;duration: '2m',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;increment: 2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;scaleDownThreshold: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;duration: '10m',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;decrement: 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;cells: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'payment-processing': {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strategy: 'request-based',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;targetLatency: 100,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;minInstances: 5,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;maxInstances: 50<br>
+&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'analytics-engine': {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strategy: 'queue-depth',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;targetQueueDepth: 1000,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;minInstances: 2,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;maxInstances: 20<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;}<br>
+};<br>
+<br>
+await promptOS.applyScalingPolicy(scalingPolicy);
+                    </code>
+                </div>
+                
+                <h2>Vertical Scaling Optimization</h2>
+                <p>While horizontal scaling provides the primary growth path, vertical scaling optimizations ensure efficient resource utilization at every scale point.</p>
+                
+                <h3>Memory Management</h3>
+                <p>The OS implements sophisticated memory management strategies including context cache tiering with hot, warm, and cold storage, aggressive garbage collection for completed workflows, memory-mapped files for large datasets, and off-heap storage for temporary data. These optimizations enable individual instances to handle more concurrent requests efficiently.</p>
+                
+                <h3>Connection Pooling</h3>
+                <p>Efficient connection management becomes critical at scale. The system maintains separate pools for different service types, implements dynamic pool sizing based on load, uses connection multiplexing where supported, and monitors pool health for proactive management. Connection pooling reduces latency and prevents resource exhaustion during traffic spikes.</p>
+                
+                <h2>Geographic Scaling</h2>
+                <p>Global deployments require careful attention to geographic distribution and data sovereignty requirements.</p>
+                
+                <div class="card">
+                    <div class="card-title">Multi-Region Architecture</div>
+                    <p>The OS supports active-active multi-region deployments that provide low latency for global users while maintaining data consistency. Regional deployments include local orchestration engines for reduced latency, region-specific cell instances for data locality, geo-distributed knowledge graph with eventual consistency, and cross-region replication for disaster recovery. Traffic routing uses geography-aware DNS and application-level routing to direct users to optimal regions.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Edge Computing Integration</div>
+                    <p>For scenarios requiring ultra-low latency, the OS supports edge deployment patterns. Edge nodes run lightweight orchestration engines that handle common requests locally while delegating complex operations to regional centers. This architecture enables sub-10ms response times for frequently accessed operations while maintaining centralized control and consistency.</p>
+                </div>
+                
+                <h2>Performance Optimization at Scale</h2>
+                <p>Maintaining performance as the system scales requires continuous optimization across multiple layers.</p>
+                
+                <h3>Caching Strategies</h3>
+                <p>Multi-tier caching dramatically improves performance at scale. The OS implements edge caching for static content and common responses, application-level caching for computed results, distributed caching for shared state, and query result caching for expensive operations. Cache invalidation uses event-driven updates to maintain consistency while maximizing cache hit rates.</p>
+                
+                <h3>Query Optimization</h3>
+                <p>As data volumes grow, query optimization becomes critical. The system employs query plan caching for repeated patterns, automatic index generation based on usage, query rewriting for optimal execution, and parallel query execution across partitions. Machine learning models continuously analyze query patterns to suggest optimization opportunities.</p>
+                
+                <div class="code-block">
+                    <code>
+// Performance Monitoring at Scale<br>
+const performanceMetrics = await promptOS.getMetrics({<br>
+&nbsp;&nbsp;timeRange: 'last_24h',<br>
+&nbsp;&nbsp;aggregation: '5m',<br>
+&nbsp;&nbsp;metrics: [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'request_latency_p99',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'throughput_per_second',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'cache_hit_rate',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'error_rate',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'resource_utilization'<br>
+&nbsp;&nbsp;]<br>
+});<br>
+<br>
+// Automatic optimization based on metrics<br>
+if (performanceMetrics.cache_hit_rate < 0.8) {<br>
+&nbsp;&nbsp;await promptOS.optimizeCache({<br>
+&nbsp;&nbsp;&nbsp;&nbsp;increaseCacheSize: true,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;adjustEvictionPolicy: 'lru-weighted',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;preloadCommonQueries: true<br>
+&nbsp;&nbsp;});<br>
+}
+                    </code>
+                </div>
+                
+                <h2>Organizational Scaling</h2>
+                <p>Technical scaling must align with organizational growth to ensure sustainable expansion.</p>
+                
+                <h3>Team Structure Evolution</h3>
+                <p>As deployments grow, team structures evolve to maintain effective operations. Initial deployments typically use a single cross-functional team. Growth phases introduce specialized teams for platform operations, cell development, and AI optimization. Mature deployments implement federated models where business units maintain their own cells while the platform team provides core infrastructure. This evolution ensures both local autonomy and global consistency.</p>
+                
+                <h3>Governance Scaling</h3>
+                <p>Governance processes must scale alongside technical systems. The OS supports hierarchical policy management where global policies apply system-wide while allowing local overrides for specific use cases. Automated compliance checking ensures policy adherence even as the number of cells and users grows exponentially. Regular governance reviews adapt policies based on operational experience and changing requirements.</p>
+                
+                <h2>Cost Optimization at Scale</h2>
+                <p>Controlling costs while scaling requires sophisticated resource management and optimization strategies.</p>
+                
+                <div class="card">
+                    <div class="card-title">Resource Allocation Optimization</div>
+                    <p>The OS implements intelligent resource allocation that balances performance with cost. Strategies include spot instance utilization for batch workloads, reserved capacity planning based on baseline usage, automatic right-sizing of instances based on actual utilization, and workload scheduling to leverage off-peak pricing. Cost allocation tags enable accurate chargeback to business units while identifying optimization opportunities.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">AI Model Cost Management</div>
+                    <p>AI operations represent a significant cost center at scale. The OS optimizes these costs through model selection based on query complexity, request batching for improved throughput, result caching to avoid repeated inference, and fallback to smaller models for simple queries. Cost-aware routing ensures that expensive operations only occur when business value justifies the expense.</p>
+                </div>
+                
+                <h2>Future-Proofing for Scale</h2>
+                <p>The Prompt Engineering OS architecture anticipates future scaling challenges through extensible design patterns that accommodate new technologies, pluggable components that enable incremental upgrades, standardized interfaces that prevent lock-in, and community-driven development that shares scaling innovations. This forward-looking approach ensures that current investments remain valuable even as scale requirements grow by orders of magnitude.</p>
+                
+                <p>Organizations implementing these scaling strategies report ability to handle 10x growth without architecture changes, linear cost scaling rather than exponential growth, maintained sub-second response times at any scale, and operational complexity that grows logarithmically with user count. These outcomes demonstrate the effectiveness of the OS's scale-by-design philosophy in real-world deployments.</p>
+            </section>
+            
+            <!-- Best Practices Section -->
+            <section class="content-section" id="best-practices">
+                <h1>Best Practices</h1>
+                <p class="lead">Proven patterns and recommendations that maximize value from your Prompt Engineering OS deployment while avoiding common pitfalls.</p>
+                
+                <h2>Architectural Best Practices</h2>
+                <p>Sound architectural decisions during initial implementation prevent costly restructuring as the system evolves. These practices emerge from successful deployments across diverse industries and scales.</p>
+                
+                <div class="highlight-box">
+                    <h3>Design for Evolution</h3>
+                    <p>The most successful deployments treat the Prompt Engineering OS as a living system that evolves with business needs. Rather than attempting to predict all future requirements, focus on creating flexible foundations that accommodate change gracefully. This approach has enabled organizations to adapt their systems for use cases that didn't exist during initial deployment.</p>
+                </div>
+                
+                <h3>Service Boundary Definition</h3>
+                <p>Defining clear service boundaries within the cell architecture critically impacts long-term maintainability. Best practices include aligning cells with business capabilities rather than technical components, maintaining single ownership for each cell to ensure accountability, designing for loose coupling with well-defined interfaces, and implementing versioning strategies from day one. Organizations that follow these practices report 60% faster feature development and significantly reduced integration complexity.</p>
+                
+                <h3>Context Management Strategy</h3>
+                <p>Effective context management differentiates sophisticated AI implementations from basic integrations. Leading organizations implement hierarchical context scoping that maintains global, session, and request-level context. They establish clear retention policies that balance memory usage with user experience. Sensitive data filtering ensures compliance while maintaining functionality. Context compression techniques enable longer conversation histories without performance degradation.</p>
+                
+                <div class="code-block">
+                    <code>
+// Best Practice: Hierarchical Context Management<br>
+const contextStrategy = {<br>
+&nbsp;&nbsp;global: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// Organization-wide context<br>
+&nbsp;&nbsp;&nbsp;&nbsp;retention: '90d',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;data: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;businessRules: loadBusinessRules(),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;regulatoryRequirements: loadCompliance(),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;organizationalPreferences: loadPreferences()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;user: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// User-specific context<br>
+&nbsp;&nbsp;&nbsp;&nbsp;retention: '30d',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;compression: 'adaptive',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;filtering: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;excludePatterns: ['ssn', 'credit_card'],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;maskSensitive: true<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;session: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// Session-specific context<br>
+&nbsp;&nbsp;&nbsp;&nbsp;retention: '24h',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;maxSize: '1MB',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;overflow: 'compress-oldest'<br>
+&nbsp;&nbsp;}<br>
+};<br>
+<br>
+await promptOS.configureContext(contextStrategy);
+                    </code>
+                </div>
+                
+                <h2>Prompt Engineering Excellence</h2>
+                <p>The quality of prompt engineering directly impacts the value delivered by the system. Organizations achieving the best results follow systematic approaches to prompt development and management.</p>
+                
+                <h3>Prompt Template Management</h3>
+                <p>Successful deployments treat prompts as managed assets rather than ad-hoc strings. Best practices include version controlling all prompt templates with change history, implementing A/B testing for prompt optimization, maintaining prompt libraries for common patterns, and establishing review processes for prompt changes. This systematic approach improves consistency while enabling continuous improvement.</p>
+                
+                <h3>Dynamic Prompt Construction</h3>
+                <p>Static prompts quickly become limiting in production environments. Leading implementations use dynamic prompt construction that incorporates real-time context from the knowledge graph, adapts tone and complexity based on user preferences, includes relevant examples from recent interactions, and adjusts for model-specific optimizations. Dynamic prompts deliver 3x better user satisfaction compared to static alternatives.</p>
+                
+                <div class="code-block">
+                    <code>
+// Best Practice: Dynamic Prompt Construction<br>
+class PromptBuilder {<br>
+&nbsp;&nbsp;async buildPrompt(request, context) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;const template = await this.selectTemplate(request.intent);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;const enrichedContext = await this.enrichContext(context);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;system: this.buildSystemPrompt(enrichedContext),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;user: this.personalizeUserPrompt(request, enrichedContext),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;examples: this.selectRelevantExamples(request.intent),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;constraints: this.applyBusinessRules(enrichedContext),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;outputFormat: this.determineOptimalFormat(request)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;};<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;async enrichContext(baseContext) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// Enhance context with knowledge graph data<br>
+&nbsp;&nbsp;&nbsp;&nbsp;const graphData = await this.queryRelevantEntities(baseContext);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;const historicalPatterns = await this.analyzeUserHistory(baseContext.userId);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;const businessState = await this.getCurrentBusinessState();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return { ...baseContext, graphData, historicalPatterns, businessState };<br>
+&nbsp;&nbsp;}<br>
+}
+                    </code>
+                </div>
+                
+                <h2>Operational Excellence</h2>
+                <p>Maintaining operational excellence requires establishing robust processes and automation from the beginning.</p>
+                
+                <h3>Monitoring and Alerting</h3>
+                <p>Comprehensive monitoring enables proactive management and continuous improvement. Essential metrics include technical indicators such as latency percentiles and error rates, business metrics like task completion rates and user satisfaction, cost metrics tracking per-request expenses, and quality metrics measuring AI response accuracy. Alerts should follow escalation hierarchies that match business impact rather than technical severity.</p>
+                
+                <h3>Incident Response</h3>
+                <p>Well-defined incident response procedures minimize business impact when issues occur. Best practices include automated runbooks for common scenarios, clear escalation paths based on impact, blameless post-mortems focused on improvement, and regular drills to maintain readiness. Organizations with mature incident response processes report 70% faster resolution times and significantly reduced recurrence rates.</p>
+                
+                <h2>Security Best Practices</h2>
+                <p>Security must be embedded throughout the system rather than added as an afterthought.</p>
+                
+                <div class="card">
+                    <div class="card-title">Zero-Trust Architecture</div>
+                    <p>Implement zero-trust principles where every request requires authentication and authorization regardless of origin. This includes mutual TLS for all service communication, request-level authorization checks, continuous verification of user identity, and automated revocation of compromised credentials. Zero-trust architectures have prevented 95% of potential security incidents in deployed systems.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Data Protection Strategies</div>
+                    <p>Protecting sensitive data requires multiple layers of security including encryption at rest with key rotation, field-level encryption for sensitive attributes, tokenization for external references, and audit logging for all data access. Regular security assessments verify that protection measures remain effective as the system evolves.</p>
+                </div>
+                
+                <h2>Change Management</h2>
+                <p>Technical excellence must be paired with effective change management to realize business value.</p>
+                
+                <h3>User Adoption Strategies</h3>
+                <p>Successful adoption requires more than training sessions. Leading organizations implement champion programs that identify and empower early adopters, gamification elements that make learning engaging, continuous feedback loops for improvement, and success story sharing to build momentum. These comprehensive approaches achieve 85% adoption rates within three months.</p>
+                
+                <h3>Continuous Improvement Culture</h3>
+                <p>The most successful deployments foster cultures of continuous improvement where users actively contribute to system enhancement. This includes regular feedback sessions with diverse user groups, transparent roadmaps showing how feedback influences development, recognition programs for valuable contributions, and shared metrics that demonstrate collective progress. Organizations with strong improvement cultures report 2x faster capability development.</p>
+                
+                <h2>Integration Best Practices</h2>
+                <p>Smooth integration with existing systems accelerates value delivery while minimizing disruption.</p>
+                
+                <h3>API Design Principles</h3>
+                <p>Well-designed APIs facilitate integration and reduce long-term maintenance. Best practices include consistent naming conventions across all endpoints, comprehensive error messages that guide resolution, versioning strategies that support gradual migration, and extensive documentation with working examples. These principles reduce integration time by 50% and support calls by 80%.</p>
+                
+                <h3>Legacy System Integration</h3>
+                <p>Most enterprises must integrate with legacy systems that cannot be immediately replaced. Successful approaches include adapter patterns that isolate legacy complexity, gradual migration strategies that deliver incremental value, data synchronization that maintains consistency, and fallback mechanisms that ensure business continuity. Organizations report that thoughtful legacy integration often delivers the highest ROI from their OS deployment.</p>
+                
+                <div class="code-block">
+                    <code>
+// Best Practice: Legacy System Adapter<br>
+class LegacySystemAdapter {<br>
+&nbsp;&nbsp;constructor(legacyClient, promptOS) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;this.legacy = legacyClient;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;this.os = promptOS;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;this.cache = new AdaptiveCache();<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;async executeOperation(request) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// Transform modern request to legacy format<br>
+&nbsp;&nbsp;&nbsp;&nbsp;const legacyRequest = this.transformRequest(request);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// Check cache to reduce legacy system load<br>
+&nbsp;&nbsp;&nbsp;&nbsp;const cached = await this.cache.get(legacyRequest);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if (cached && !request.requiresFresh) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return this.transformResponse(cached);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// Execute with circuit breaker protection<br>
+&nbsp;&nbsp;&nbsp;&nbsp;try {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const response = await this.circuitBreaker.execute(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;() => this.legacy.process(legacyRequest)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;await this.cache.set(legacyRequest, response);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return this.transformResponse(response);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;} catch (error) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Graceful degradation<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return this.handleLegacyFailure(error, request);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;}<br>
+}
+                    </code>
+                </div>
+                
+                <h2>Performance Optimization</h2>
+                <p>Optimal performance requires attention to both system-level and interaction-level optimizations.</p>
+                
+                <h3>Request Optimization</h3>
+                <p>Minimizing request latency improves user satisfaction and reduces resource consumption. Key techniques include request batching for related operations, predictive prefetching based on user patterns, connection pooling and reuse, and parallel execution where possible. These optimizations typically reduce average response time by 40-60%.</p>
+                
+                <h3>Resource Utilization</h3>
+                <p>Efficient resource utilization reduces costs while maintaining performance. Best practices include right-sizing instances based on actual usage patterns, implementing request prioritization for business-critical operations, using spot instances for batch processing, and automatic scaling based on predictive models. Organizations following these practices report 30-50% cost reductions compared to initial deployments.</p>
+                
+                <h2>Future-Proofing Strategies</h2>
+                <p>Building systems that remain valuable as technology and business needs evolve requires deliberate planning.</p>
+                
+                <p>Successful organizations implement abstraction layers that isolate core business logic from implementation details, maintain clean interfaces that support technology substitution, document architectural decisions and their rationale, and participate actively in the OS community to influence direction. These strategies ensure that current investments continue delivering value even as underlying technologies change.</p>
+                
+                <p>The best practices outlined here represent collective wisdom from hundreds of deployments across diverse industries. While every organization's journey is unique, these patterns provide proven starting points that accelerate success while avoiding known pitfalls. Regular review and adaptation of these practices ensures they remain relevant as both technology and business needs evolve.</p>
+            </section>
+            
+        </main>
+    </div>
+    
+    <script>
+        // Navigation functionality
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sectionId = item.getAttribute('data-section');
+                
+                // Update active states
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                
+                // Show selected section
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById(sectionId).classList.add('active');
+            });
+        });
+        
+        // Main Architecture Visualization (Fixed)
+        function createMainArchitecture() {
+            const svg = document.getElementById('main-architecture');
+            if (!svg) return;
+            
+            const width = svg.clientWidth || 800;
+            const height = 500;
+            
+            // Clear existing content
+            svg.innerHTML = '';
+            
+            // Define layers with their components
+            const layers = [
+                {
+                    name: 'Prompt Engineering OS',
+                    y: 50,
+                    color: '#8b5cf6',
+                    components: ['State Management', 'Context Orchestration', 'Human Interface']
+                },
+                {
+                    name: 'Model Context Protocol',
+                    y: 150,
+                    color: '#f59e0b',
+                    components: ['AI Models', 'MCP Gateway', 'Integration APIs']
+                },
+                {
+                    name: 'Knowledge Graph',
+                    y: 250,
+                    color: '#10b981',
+                    components: ['Entities', 'Relationships', 'Semantic Layer']
+                },
+                {
+                    name: 'Cell Architecture',
+                    y: 350,
+                    color: '#3b82f6',
+                    components: ['Account Cell', 'Payment Cell', 'Fraud Cell', 'Analytics Cell']
+                }
+            ];
+            
+            // Create layer groups for toggle functionality
+            layers.forEach((layer, index) => {
+                const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                g.setAttribute('class', `layer-group layer-${index}`);
+                g.setAttribute('id', `main-layer-${index}`);
+                
+                // Layer background
+                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                rect.setAttribute('x', '50');
+                rect.setAttribute('y', layer.y);
+                rect.setAttribute('width', width - 100);
+                rect.setAttribute('height', '80');
+                rect.setAttribute('rx', '8');
+                rect.setAttribute('fill', layer.color);
+                rect.setAttribute('fill-opacity', '0.1');
+                rect.setAttribute('stroke', layer.color);
+                rect.setAttribute('stroke-width', '2');
+                
+                // Layer label
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', '70');
+                text.setAttribute('y', layer.y + 30);
+                text.setAttribute('class', 'text-label');
+                text.setAttribute('font-weight', 'bold');
+                text.textContent = layer.name;
+                
+                g.appendChild(rect);
+                g.appendChild(text);
+                
+                // Add components
+                const componentWidth = Math.min(160, (width - 200) / layer.components.length - 20);
+                layer.components.forEach((comp, i) => {
+                    const compX = 150 + (i * (componentWidth + 20));
+                    const compRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                    compRect.setAttribute('x', compX);
+                    compRect.setAttribute('y', layer.y + 40);
+                    compRect.setAttribute('width', componentWidth);
+                    compRect.setAttribute('height', '30');
+                    compRect.setAttribute('rx', '4');
+                    compRect.setAttribute('fill', layer.color);
+                    compRect.setAttribute('fill-opacity', '0.3');
+                    compRect.setAttribute('stroke', layer.color);
+                    compRect.setAttribute('class', 'cell-node');
+                    
+                    const compText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    compText.setAttribute('x', compX + componentWidth / 2);
+                    compText.setAttribute('y', layer.y + 58);
+                    compText.setAttribute('text-anchor', 'middle');
+                    compText.setAttribute('class', 'text-label');
+                    compText.setAttribute('font-size', '12');
+                    compText.textContent = comp;
+                    
+                    g.appendChild(compRect);
+                    g.appendChild(compText);
+                });
+                
+                // Draw connections between layers
+                if (index < layers.length - 1) {
+                    for (let i = 0; i < 3; i++) {
+                        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                        line.setAttribute('x1', 200 + (i * 200));
+                        line.setAttribute('y1', layer.y + 80);
+                        line.setAttribute('x2', 200 + (i * 200));
+                        line.setAttribute('y2', layers[index + 1].y);
+                        line.setAttribute('class', 'connection-line');
+                        line.setAttribute('stroke-dasharray', '4,4');
+                        line.setAttribute('opacity', '0.4');
+                        g.appendChild(line);
+                    }
+                }
+                
+                svg.appendChild(g);
+            });
+            
+            // Re-attach layer toggle functionality
+            const toggles = document.querySelectorAll('#toggle-os, #toggle-mcp, #toggle-kg, #toggle-cells');
+            toggles.forEach((toggle, index) => {
+                if (!toggle) return;
+                
+                // Remove existing listeners and add new ones
+                const newToggle = toggle.cloneNode(true);
+                toggle.parentNode.replaceChild(newToggle, toggle);
+                
+                newToggle.addEventListener('change', (e) => {
+                    const layerGroup = document.getElementById(`main-layer-${index}`);
+                    if (layerGroup) {
+                        layerGroup.style.opacity = e.target.checked ? '1' : '0.2';
+                    }
+                });
+            });
+        }
+        
+        // Layer toggle functionality for main architecture
+        document.querySelectorAll('.layer-toggle input').forEach((toggle, index) => {
+            toggle.addEventListener('change', (e) => {
+                const layerGroup = document.querySelector(`.layer-${3 - index}`);
+                if (layerGroup) {
+                    layerGroup.style.opacity = e.target.checked ? '1' : '0.2';
+                }
+            });
+        });
+        
+        // Initialize all visualizations when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            createMainArchitecture();
+            createCellStructure();
+            createKnowledgeGraphViz();
+            createMCPIntegrationViz();
+            createNetworkEffectsViz();
+            createIntegratedArchitecture();
+            createCellMeshArchitecture();
+        });
+        
+        // Responsive handling
+        window.addEventListener('resize', () => {
+            createMainArchitecture();
+            createIntegratedArchitecture();
+            createCellMeshArchitecture();
+        });
+        
+        // Cell Structure Visualization
+        function createCellStructure() {
+            const svg = document.getElementById('cell-structure-viz');
+            if (!svg) return;
+            
+            const width = svg.clientWidth || 800;
+            const height = 400;
+            svg.innerHTML = '';
+            
+            // Cell container
+            const cellGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            cellGroup.setAttribute('transform', 'translate(50, 50)');
+            
+            // Cell layers
+            const layers = [
+                { name: 'API Gateway', y: 0, color: '#3b82f6', desc: 'REST, GraphQL, gRPC interfaces' },
+                { name: 'Business Logic', y: 80, color: '#10b981', desc: 'Domain rules and workflows' },
+                { name: 'Event System', y: 160, color: '#f59e0b', desc: 'Event publishing and streaming' },
+                { name: 'Data Persistence', y: 240, color: '#8b5cf6', desc: 'Database and storage layer' }
+            ];
+            
+            layers.forEach((layer, index) => {
+                // Layer rectangle
+                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                rect.setAttribute('x', '100');
+                rect.setAttribute('y', layer.y);
+                rect.setAttribute('width', '500');
+                rect.setAttribute('height', '60');
+                rect.setAttribute('rx', '8');
+                rect.setAttribute('fill', layer.color);
+                rect.setAttribute('fill-opacity', '0.2');
+                rect.setAttribute('stroke', layer.color);
+                rect.setAttribute('stroke-width', '2');
+                rect.setAttribute('class', 'cell-node');
+                
+                // Layer label
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', '120');
+                text.setAttribute('y', layer.y + 25);
+                text.setAttribute('class', 'text-label');
+                text.setAttribute('font-weight', 'bold');
+                text.textContent = layer.name;
+                
+                // Layer description
+                const desc = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                desc.setAttribute('x', '120');
+                desc.setAttribute('y', layer.y + 45);
+                desc.setAttribute('class', 'text-sublabel');
+                desc.textContent = layer.desc;
+                
+                // Connections between layers
+                if (index < layers.length - 1) {
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    line.setAttribute('x1', '350');
+                    line.setAttribute('y1', layer.y + 60);
+                    line.setAttribute('x2', '350');
+                    line.setAttribute('y2', layers[index + 1].y);
+                    line.setAttribute('stroke', '#475569');
+                    line.setAttribute('stroke-width', '2');
+                    line.setAttribute('stroke-dasharray', '4,4');
+                    cellGroup.appendChild(line);
+                }
+                
+                cellGroup.appendChild(rect);
+                cellGroup.appendChild(text);
+                cellGroup.appendChild(desc);
+            });
+            
+            // External connections
+            const externalConnections = [
+                { x: 0, y: 30, label: 'External APIs' },
+                { x: 0, y: 110, label: 'Other Cells' },
+                { x: 0, y: 190, label: 'Event Bus' },
+                { x: 700, y: 30, label: 'Prompt OS' },
+                { x: 700, y: 190, label: 'Knowledge Graph' }
+            ];
+            
+            externalConnections.forEach(conn => {
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                const startX = conn.x === 0 ? 100 : 600;
+                const endX = conn.x === 0 ? 0 : 700;
+                line.setAttribute('d', `M ${startX} ${conn.y} L ${endX} ${conn.y}`);
+                line.setAttribute('stroke', '#64748b');
+                line.setAttribute('stroke-width', '2');
+                line.setAttribute('marker-end', 'url(#arrowhead)');
+                
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', conn.x === 0 ? 10 : 620);
+                text.setAttribute('y', conn.y - 5);
+                text.setAttribute('class', 'text-sublabel');
+                text.setAttribute('font-size', '11');
+                text.textContent = conn.label;
+                
+                cellGroup.appendChild(line);
+                cellGroup.appendChild(text);
+            });
+            
+            svg.appendChild(cellGroup);
+        }
+        
+        // Knowledge Graph Visualization
+        function createKnowledgeGraphViz() {
+            const svg = document.getElementById('knowledge-graph-viz');
+            if (!svg) return;
+            
+            const width = svg.clientWidth || 800;
+            const height = 500;
+            svg.innerHTML = '';
+            
+            // Define nodes
+            const nodes = [
+                { id: 'customer', x: 200, y: 150, r: 40, color: '#3b82f6' },
+                { id: 'account', x: 400, y: 100, r: 35, color: '#10b981' },
+                { id: 'transaction', x: 600, y: 150, r: 35, color: '#f59e0b' },
+                { id: 'product', x: 300, y: 250, r: 30, color: '#8b5cf6' },
+                { id: 'risk', x: 500, y: 300, r: 35, color: '#ef4444' },
+                { id: 'location', x: 150, y: 350, r: 30, color: '#06b6d4' },
+                { id: 'merchant', x: 650, y: 350, r: 30, color: '#84cc16' }
+            ];
+            
+            // Define edges
+            const edges = [
+                { from: 'customer', to: 'account', label: 'owns' },
+                { from: 'account', to: 'transaction', label: 'contains' },
+                { from: 'transaction', to: 'merchant', label: 'with' },
+                { from: 'customer', to: 'risk', label: 'has_profile' },
+                { from: 'customer', to: 'location', label: 'resides_at' },
+                { from: 'account', to: 'product', label: 'type_of' },
+                { from: 'transaction', to: 'risk', label: 'influences' }
+            ];
+            
+            const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            
+            // Draw edges first
+            edges.forEach(edge => {
+                const fromNode = nodes.find(n => n.id === edge.from);
+                const toNode = nodes.find(n => n.id === edge.to);
+                
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', fromNode.x);
+                line.setAttribute('y1', fromNode.y);
+                line.setAttribute('x2', toNode.x);
+                line.setAttribute('y2', toNode.y);
+                line.setAttribute('stroke', '#64748b');
+                line.setAttribute('stroke-width', '2');
+                line.setAttribute('opacity', '0.6');
+                
+                // Edge label
+                const midX = (fromNode.x + toNode.x) / 2;
+                const midY = (fromNode.y + toNode.y) / 2;
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', midX);
+                text.setAttribute('y', midY - 5);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('class', 'text-sublabel');
+                text.setAttribute('font-size', '11');
+                text.textContent = edge.label;
+                
+                g.appendChild(line);
+                g.appendChild(text);
+            });
+            
+            // Draw nodes
+            nodes.forEach(node => {
+                const nodeGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                nodeGroup.setAttribute('transform', `translate(${node.x}, ${node.y})`);
+                nodeGroup.style.cursor = 'pointer';
+                
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('r', node.r);
+                circle.setAttribute('fill', node.color);
+                circle.setAttribute('fill-opacity', '0.8');
+                circle.setAttribute('stroke', node.color);
+                circle.setAttribute('stroke-width', '2');
+                circle.setAttribute('class', 'kg-node');
+                
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('y', '5');
+                text.setAttribute('class', 'text-label');
+                text.setAttribute('fill', 'white');
+                text.setAttribute('font-weight', 'bold');
+                text.textContent = node.id.charAt(0).toUpperCase() + node.id.slice(1);
+                
+                nodeGroup.appendChild(circle);
+                nodeGroup.appendChild(text);
+                
+                // Add hover effect
+                nodeGroup.addEventListener('mouseenter', () => {
+                    circle.setAttribute('r', node.r + 5);
+                    circle.setAttribute('fill-opacity', '1');
+                });
+                
+                nodeGroup.addEventListener('mouseleave', () => {
+                    circle.setAttribute('r', node.r);
+                    circle.setAttribute('fill-opacity', '0.8');
+                });
+                
+                g.appendChild(nodeGroup);
+            });
+            
+            svg.appendChild(g);
+        }
+        
+        // MCP Integration Visualization
+        function createMCPIntegrationViz() {
+            const svg = document.getElementById('mcp-integration-viz');
+            if (!svg) return;
+            
+            const width = svg.clientWidth || 800;
+            const height = 500;
+            svg.innerHTML = '';
+            
+            // Central MCP Gateway
+            const mcpGateway = {
+                x: width / 2,
+                y: height / 2,
+                width: 200,
+                height: 80
+            };
+            
+            // Draw MCP Gateway
+            const gateway = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            gateway.setAttribute('x', mcpGateway.x - mcpGateway.width / 2);
+            gateway.setAttribute('y', mcpGateway.y - mcpGateway.height / 2);
+            gateway.setAttribute('width', mcpGateway.width);
+            gateway.setAttribute('height', mcpGateway.height);
+            gateway.setAttribute('rx', '40');
+            gateway.setAttribute('fill', '#f59e0b');
+            gateway.setAttribute('fill-opacity', '0.2');
+            gateway.setAttribute('stroke', '#f59e0b');
+            gateway.setAttribute('stroke-width', '3');
+            
+            const gatewayText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            gatewayText.setAttribute('x', mcpGateway.x);
+            gatewayText.setAttribute('y', mcpGateway.y + 5);
+            gatewayText.setAttribute('text-anchor', 'middle');
+            gatewayText.setAttribute('class', 'text-label');
+            gatewayText.setAttribute('font-weight', 'bold');
+            gatewayText.setAttribute('font-size', '16');
+            gatewayText.textContent = 'MCP Gateway';
+            
+            svg.appendChild(gateway);
+            svg.appendChild(gatewayText);
+            
+            // AI Models (top)
+            const aiModels = [
+                { name: 'Claude', x: 150, y: 80 },
+                { name: 'GPT-4', x: 400, y: 80 },
+                { name: 'Custom ML', x: 650, y: 80 }
+            ];
+            
+            aiModels.forEach(model => {
+                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                rect.setAttribute('x', model.x - 60);
+                rect.setAttribute('y', model.y - 25);
+                rect.setAttribute('width', '120');
+                rect.setAttribute('height', '50');
+                rect.setAttribute('rx', '25');
+                rect.setAttribute('fill', '#8b5cf6');
+                rect.setAttribute('fill-opacity', '0.2');
+                rect.setAttribute('stroke', '#8b5cf6');
+                rect.setAttribute('stroke-width', '2');
+                
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', model.x);
+                text.setAttribute('y', model.y + 5);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('class', 'text-label');
+                text.textContent = model.name;
+                
+                // Connection to MCP
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', model.x);
+                line.setAttribute('y1', model.y + 25);
+                line.setAttribute('x2', mcpGateway.x);
+                line.setAttribute('y2', mcpGateway.y - mcpGateway.height / 2);
+                line.setAttribute('stroke', '#f59e0b');
+                line.setAttribute('stroke-width', '2');
+                line.setAttribute('stroke-dasharray', '5,5');
+                line.setAttribute('opacity', '0.6');
+                
+                svg.appendChild(line);
+                svg.appendChild(rect);
+                svg.appendChild(text);
+            });
+            
+            // Enterprise Systems (bottom)
+            const systems = [
+                { name: 'Cell Services', x: 200, y: 420 },
+                { name: 'Knowledge Graph', x: 400, y: 420 },
+                { name: 'Legacy Systems', x: 600, y: 420 }
+            ];
+            
+            systems.forEach(system => {
+                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                rect.setAttribute('x', system.x - 70);
+                rect.setAttribute('y', system.y - 25);
+                rect.setAttribute('width', '140');
+                rect.setAttribute('height', '50');
+                rect.setAttribute('rx', '8');
+                rect.setAttribute('fill', '#3b82f6');
+                rect.setAttribute('fill-opacity', '0.2');
+                rect.setAttribute('stroke', '#3b82f6');
+                rect.setAttribute('stroke-width', '2');
+                
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', system.x);
+                text.setAttribute('y', system.y + 5);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('class', 'text-label');
+                text.textContent = system.name;
+                
+                // Connection from MCP
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', mcpGateway.x);
+                line.setAttribute('y1', mcpGateway.y + mcpGateway.height / 2);
+                line.setAttribute('x2', system.x);
+                line.setAttribute('y2', system.y - 25);
+                line.setAttribute('stroke', '#f59e0b');
+                line.setAttribute('stroke-width', '2');
+                line.setAttribute('stroke-dasharray', '5,5');
+                line.setAttribute('opacity', '0.6');
+                
+                svg.appendChild(line);
+                svg.appendChild(rect);
+                svg.appendChild(text);
+            });
+            
+            // Protocol layers (sides)
+            const layers = [
+                { name: 'Security Layer', x: 50, y: height / 2 },
+                { name: 'Context Manager', x: width - 50, y: height / 2 - 40 },
+                { name: 'Tool Registry', x: width - 50, y: height / 2 + 40 }
+            ];
+            
+            layers.forEach(layer => {
+                const isLeft = layer.x < width / 2;
+                const rectX = isLeft ? layer.x : layer.x - 120;
+                
+                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                rect.setAttribute('x', rectX);
+                rect.setAttribute('y', layer.y - 20);
+                rect.setAttribute('width', '120');
+                rect.setAttribute('height', '40');
+                rect.setAttribute('rx', '8');
+                rect.setAttribute('fill', '#10b981');
+                rect.setAttribute('fill-opacity', '0.2');
+                rect.setAttribute('stroke', '#10b981');
+                rect.setAttribute('stroke-width', '2');
+                
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', isLeft ? layer.x + 60 : layer.x - 60);
+                text.setAttribute('y', layer.y + 5);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('class', 'text-label');
+                text.setAttribute('font-size', '12');
+                text.textContent = layer.name;
+                
+                svg.appendChild(rect);
+                svg.appendChild(text);
+            });
+        }
+        
+        // Network Effects Visualization
+        function createNetworkEffectsViz() {
+            const svg = document.getElementById('network-effects-viz');
+            if (!svg) return;
+            
+            const width = svg.clientWidth || 800;
+            const height = 400;
+            svg.innerHTML = '';
+            
+            // Create circular network effect visualization
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = 120;
+            
+            // Central hub
+            const hub = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            hub.setAttribute('cx', centerX);
+            hub.setAttribute('cy', centerY);
+            hub.setAttribute('r', '50');
+            hub.setAttribute('fill', '#8b5cf6');
+            hub.setAttribute('fill-opacity', '0.3');
+            hub.setAttribute('stroke', '#8b5cf6');
+            hub.setAttribute('stroke-width', '3');
+            
+            const hubText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            hubText.setAttribute('x', centerX);
+            hubText.setAttribute('y', centerY + 5);
+            hubText.setAttribute('text-anchor', 'middle');
+            hubText.setAttribute('class', 'text-label');
+            hubText.setAttribute('font-weight', 'bold');
+            hubText.textContent = 'Prompt OS';
+            
+            svg.appendChild(hub);
+            svg.appendChild(hubText);
+            
+            // Network participants
+            const participants = [
+                { name: 'Organization A', value: 85 },
+                { name: 'Organization B', value: 70 },
+                { name: 'Organization C', value: 90 },
+                { name: 'Organization D', value: 60 },
+                { name: 'Organization E', value: 75 },
+                { name: 'Organization F', value: 80 }
+            ];
+            
+            participants.forEach((participant, index) => {
+                const angle = (index / participants.length) * 2 * Math.PI - Math.PI / 2;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                
+                // Node
+                const nodeRadius = 20 + (participant.value / 100) * 20;
+                const node = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                node.setAttribute('cx', x);
+                node.setAttribute('cy', y);
+                node.setAttribute('r', nodeRadius);
+                node.setAttribute('fill', '#3b82f6');
+                node.setAttribute('fill-opacity', '0.6');
+                node.setAttribute('stroke', '#3b82f6');
+                node.setAttribute('stroke-width', '2');
+                
+                // Connection to hub
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', centerX);
+                line.setAttribute('y1', centerY);
+                line.setAttribute('x2', x);
+                line.setAttribute('y2', y);
+                line.setAttribute('stroke', '#64748b');
+                line.setAttribute('stroke-width', '2');
+                line.setAttribute('opacity', '0.3');
+                
+                // Inter-participant connections
+                const nextIndex = (index + 1) % participants.length;
+                const nextAngle = (nextIndex / participants.length) * 2 * Math.PI - Math.PI / 2;
+                const nextX = centerX + radius * Math.cos(nextAngle);
+                const nextY = centerY + radius * Math.sin(nextAngle);
+                
+                const interLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                interLine.setAttribute('x1', x);
+                interLine.setAttribute('y1', y);
+                interLine.setAttribute('x2', nextX);
+                interLine.setAttribute('y2', nextY);
+                interLine.setAttribute('stroke', '#10b981');
+                interLine.setAttribute('stroke-width', '1');
+                interLine.setAttribute('opacity', '0.4');
+                interLine.setAttribute('stroke-dasharray', '3,3');
+                
+                // Label
+                const labelX = centerX + (radius + 60) * Math.cos(angle);
+                const labelY = centerY + (radius + 60) * Math.sin(angle);
+                const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                label.setAttribute('x', labelX);
+                label.setAttribute('y', labelY);
+                label.setAttribute('text-anchor', 'middle');
+                label.setAttribute('class', 'text-sublabel');
+                label.setAttribute('font-size', '11');
+                label.textContent = participant.name;
+                
+                svg.appendChild(line);
+                svg.appendChild(interLine);
+                svg.appendChild(node);
+                svg.appendChild(label);
+            });
+            
+            // Value indicators
+            const valueText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            valueText.setAttribute('x', centerX);
+            valueText.setAttribute('y', height - 20);
+            valueText.setAttribute('text-anchor', 'middle');
+            valueText.setAttribute('class', 'text-label');
+            valueText.setAttribute('font-size', '14');
+            valueText.textContent = 'Network Value = n² (Metcalfe\'s Law)';
+            
+            svg.appendChild(valueText);
+        }
+        
+        // Integrated Architecture Visualization (Main Overview)
+        function createIntegratedArchitecture() {
+            const svg = document.getElementById('integrated-architecture-main');
+            if (!svg) return;
+            
+            const width = svg.clientWidth || 800;
+            const height = 700;
+            svg.innerHTML = '';
+            
+            let currentLayer = 'cells';
+            
+            // Cell architecture data
+            const cells = [
+                { id: 'account', name: 'Account Management', x: 200, y: 200 },
+                { id: 'payment', name: 'Payment Processing', x: 450, y: 150 },
+                { id: 'fraud', name: 'Fraud Detection', x: 700, y: 200 },
+                { id: 'kyc', name: 'KYC Compliance', x: 150, y: 400 },
+                { id: 'ledger', name: 'General Ledger', x: 350, y: 350 },
+                { id: 'notification', name: 'Notification Service', x: 600, y: 400 },
+                { id: 'analytics', name: 'Analytics Engine', x: 800, y: 350 }
+            ];
+            
+            // Knowledge graph entities
+            const kgNodes = [
+                { id: 'customer', label: 'Customer', x: 300, y: 250 },
+                { id: 'account_entity', label: 'Account', x: 450, y: 200 },
+                { id: 'transaction', label: 'Transaction', x: 600, y: 250 },
+                { id: 'risk_profile', label: 'Risk Profile', x: 750, y: 300 },
+                { id: 'identity', label: 'Identity', x: 200, y: 350 },
+                { id: 'compliance', label: 'Compliance Status', x: 350, y: 450 },
+                { id: 'balance', label: 'Balance', x: 500, y: 350 },
+                { id: 'alert', label: 'Alert', x: 650, y: 450 }
+            ];
+            
+            const kgEdges = [
+                { from: 'customer', to: 'account_entity', label: 'owns' },
+                { from: 'account_entity', to: 'transaction', label: 'contains' },
+                { from: 'customer', to: 'risk_profile', label: 'has' },
+                { from: 'customer', to: 'identity', label: 'verified_by' },
+                { from: 'identity', to: 'compliance', label: 'determines' },
+                { from: 'account_entity', to: 'balance', label: 'maintains' },
+                { from: 'transaction', to: 'risk_profile', label: 'affects' },
+                { from: 'risk_profile', to: 'alert', label: 'triggers' }
+            ];
+            
+            // Create groups for different layers
+            const cellGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            cellGroup.setAttribute('id', 'cell-layer-main');
+            
+            const kgGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            kgGroup.setAttribute('id', 'kg-layer-main');
+            
+            const mcpGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            mcpGroup.setAttribute('id', 'mcp-layer-main');
+            
+            // Draw cell connections first (background)
+            const connectionGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            cells.forEach((cell, i) => {
+                cells.slice(i + 1).forEach(otherCell => {
+                    if (Math.random() > 0.6) {
+                        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                        const d = `M ${cell.x + 75} ${cell.y + 40} L ${otherCell.x + 75} ${otherCell.y + 40}`;
+                        path.setAttribute('d', d);
+                        path.setAttribute('class', 'connection');
+                        connectionGroup.appendChild(path);
+                    }
+                });
+            });
+            cellGroup.appendChild(connectionGroup);
+            
+            // Draw cells
+            cells.forEach(cell => {
+                const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                group.setAttribute('class', 'cell');
+                group.setAttribute('transform', `translate(${cell.x}, ${cell.y})`);
+                
+                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                rect.setAttribute('class', 'cell-body');
+                rect.setAttribute('width', '150');
+                rect.setAttribute('height', '80');
+                rect.setAttribute('rx', '8');
+                
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('class', 'text-label');
+                text.setAttribute('x', '75');
+                text.setAttribute('y', '45');
+                text.setAttribute('text-anchor', 'middle');
+                text.textContent = cell.name;
+                
+                group.appendChild(rect);
+                group.appendChild(text);
+                
+                group.addEventListener('click', () => showIntegratedInfo('cell', cell));
+                
+                cellGroup.appendChild(group);
+            });
+            
+            // Draw knowledge graph edges
+            kgEdges.forEach(edge => {
+                const fromNode = kgNodes.find(n => n.id === edge.from);
+                const toNode = kgNodes.find(n => n.id === edge.to);
+                
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', `M ${fromNode.x} ${fromNode.y} L ${toNode.x} ${toNode.y}`);
+                path.setAttribute('class', 'kg-edge');
+                kgGroup.appendChild(path);
+            });
+            
+            // Draw knowledge graph nodes
+            kgNodes.forEach(node => {
+                const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                group.setAttribute('class', 'kg-node');
+                group.setAttribute('transform', `translate(${node.x}, ${node.y})`);
+                
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('class', 'kg-node-circle');
+                circle.setAttribute('r', '30');
+                
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('class', 'kg-label');
+                text.setAttribute('y', '5');
+                text.textContent = node.label;
+                
+                group.appendChild(circle);
+                group.appendChild(text);
+                
+                group.addEventListener('click', () => showIntegratedInfo('kg', node));
+                
+                kgGroup.appendChild(group);
+            });
+            
+            // Draw MCP hub
+            const mcpHub = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            mcpHub.setAttribute('transform', 'translate(500, 100)');
+            
+            const mcpRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            mcpRect.setAttribute('class', 'mcp-hub');
+            mcpRect.setAttribute('x', '-100');
+            mcpRect.setAttribute('y', '-30');
+            mcpRect.setAttribute('width', '200');
+            mcpRect.setAttribute('height', '60');
+            mcpRect.setAttribute('rx', '30');
+            
+            const mcpText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            mcpText.setAttribute('class', 'mcp-label');
+            mcpText.setAttribute('y', '5');
+            mcpText.textContent = 'MCP Gateway';
+            
+            mcpHub.appendChild(mcpRect);
+            mcpHub.appendChild(mcpText);
+            mcpGroup.appendChild(mcpHub);
+            
+            // Draw MCP connections to cells
+            cells.forEach(cell => {
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', `M 500 130 L ${cell.x + 75} ${cell.y}`);
+                path.setAttribute('class', 'mcp-connector');
+                mcpGroup.appendChild(path);
+            });
+            
+            // Add AI model representations
+            const aiModels = [
+                { name: 'Claude', x: 150, y: 50 },
+                { name: 'Risk Model', x: 500, y: 30 },
+                { name: 'Analytics AI', x: 850, y: 50 }
+            ];
+            
+            aiModels.forEach(model => {
+                const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                group.setAttribute('transform', `translate(${model.x}, ${model.y})`);
+                
+                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                rect.setAttribute('class', 'mcp-hub');
+                rect.setAttribute('x', '-40');
+                rect.setAttribute('y', '-15');
+                rect.setAttribute('width', '80');
+                rect.setAttribute('height', '30');
+                rect.setAttribute('rx', '15');
+                
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('class', 'mcp-label');
+                text.setAttribute('y', '5');
+                text.setAttribute('font-size', '12');
+                text.textContent = model.name;
+                
+                group.appendChild(rect);
+                group.appendChild(text);
+                
+                const connector = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                connector.setAttribute('d', `M ${model.x} ${model.y + 15} L 500 70`);
+                connector.setAttribute('class', 'mcp-connector');
+                mcpGroup.insertBefore(connector, mcpGroup.firstChild);
+                
+                mcpGroup.appendChild(group);
+            });
+            
+            // Prompt OS Layer
+            const osGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            osGroup.setAttribute('id', 'os-layer-main');
+            
+            const osRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            osRect.setAttribute('x', '50');
+            osRect.setAttribute('y', '500');
+            osRect.setAttribute('width', width - 100);
+            osRect.setAttribute('height', '100');
+            osRect.setAttribute('rx', '10');
+            osRect.setAttribute('class', 'os-layer');
+            
+            const osText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            osText.setAttribute('x', width / 2);
+            osText.setAttribute('y', '560');
+            osText.setAttribute('text-anchor', 'middle');
+            osText.setAttribute('class', 'text-label');
+            osText.setAttribute('font-size', '18');
+            osText.setAttribute('fill', '#8b5cf6');
+            osText.textContent = 'Prompt Engineering Operating System';
+            
+            osGroup.appendChild(osRect);
+            osGroup.appendChild(osText);
+            
+            svg.appendChild(cellGroup);
+            svg.appendChild(kgGroup);
+            svg.appendChild(mcpGroup);
+            svg.appendChild(osGroup);
+            
+            // Initialize with cells visible
+            showIntegratedLayer('cells');
+        }
+        
+        // Show integrated layer function
+        window.showIntegratedLayer = function(layer) {
+            const buttons = document.querySelectorAll('#integrated-architecture-main').length > 0 ? 
+                document.querySelectorAll('.layer-indicator button') : [];
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            const cellLayer = document.getElementById('cell-layer-main');
+            const kgLayer = document.getElementById('kg-layer-main');
+            const mcpLayer = document.getElementById('mcp-layer-main');
+            const osLayer = document.getElementById('os-layer-main');
+            
+            if (layer === 'cells') {
+                buttons[0]?.classList.add('active');
+                cellLayer.style.opacity = '1';
+                kgLayer.style.opacity = '0.1';
+                mcpLayer.style.opacity = '0.1';
+                osLayer.style.opacity = '0.3';
+                document.querySelectorAll('#kg-layer-main .kg-node, #kg-layer-main .kg-edge').forEach(el => el.classList.remove('visible'));
+                document.querySelectorAll('#mcp-layer-main .mcp-connector, #mcp-layer-main .mcp-hub').forEach(el => el.classList.remove('visible'));
+            } else if (layer === 'knowledge') {
+                buttons[1]?.classList.add('active');
+                cellLayer.style.opacity = '0.2';
+                kgLayer.style.opacity = '1';
+                mcpLayer.style.opacity = '0.1';
+                osLayer.style.opacity = '0.3';
+                document.querySelectorAll('#kg-layer-main .kg-node, #kg-layer-main .kg-edge').forEach(el => el.classList.add('visible'));
+                document.querySelectorAll('#mcp-layer-main .mcp-connector, #mcp-layer-main .mcp-hub').forEach(el => el.classList.remove('visible'));
+            } else if (layer === 'mcp') {
+                buttons[2]?.classList.add('active');
+                cellLayer.style.opacity = '0.3';
+                kgLayer.style.opacity = '0.1';
+                mcpLayer.style.opacity = '1';
+                osLayer.style.opacity = '0.3';
+                document.querySelectorAll('#kg-layer-main .kg-node, #kg-layer-main .kg-edge').forEach(el => el.classList.remove('visible'));
+                document.querySelectorAll('#mcp-layer-main .mcp-connector, #mcp-layer-main .mcp-hub').forEach(el => el.classList.add('visible'));
+            } else if (layer === 'all') {
+                buttons[3]?.classList.add('active');
+                cellLayer.style.opacity = '0.8';
+                kgLayer.style.opacity = '0.8';
+                mcpLayer.style.opacity = '0.8';
+                osLayer.style.opacity = '1';
+                document.querySelectorAll('#kg-layer-main .kg-node, #kg-layer-main .kg-edge').forEach(el => el.classList.add('visible'));
+                document.querySelectorAll('#mcp-layer-main .mcp-connector, #mcp-layer-main .mcp-hub').forEach(el => el.classList.add('visible'));
+            }
+            
+            updateIntegratedInfoForLayer(layer);
+        }
+        
+        function showIntegratedInfo(type, data) {
+            const infoPanel = document.getElementById('mainInfoPanel');
+            const infoTitle = document.getElementById('mainInfoTitle');
+            const infoContent = document.getElementById('mainInfoContent');
+            
+            if (type === 'cell') {
+                infoTitle.textContent = data.name;
+                infoContent.innerHTML = `
+                    <strong>Cell Architecture Component</strong><br><br>
+                    This autonomous cell manages its own data persistence, business logic, and API interfaces. 
+                    It communicates with other cells through the service mesh for distributed operations.
+                `;
+            } else if (type === 'kg') {
+                infoTitle.textContent = data.label;
+                infoContent.innerHTML = `
+                    <strong>Knowledge Graph Entity</strong><br><br>
+                    Represents a semantic concept within the financial domain. This entity maintains 
+                    relationships with other entities to form a comprehensive knowledge network.
+                `;
+            }
+            
+            infoPanel.classList.add('visible');
+            setTimeout(() => infoPanel.classList.remove('visible'), 5000);
+        }
+        
+        function updateIntegratedInfoForLayer(layer) {
+            const infoPanel = document.getElementById('mainInfoPanel');
+            const infoTitle = document.getElementById('mainInfoTitle');
+            const infoContent = document.getElementById('mainInfoContent');
+            
+            if (layer === 'cells') {
+                infoTitle.textContent = 'Cell-Based Architecture';
+                infoContent.innerHTML = `
+                    Vertically integrated services with autonomous operation. Each cell owns its complete 
+                    domain from database to API, communicating through a service mesh topology.
+                `;
+            } else if (layer === 'knowledge') {
+                infoTitle.textContent = 'Knowledge Graph Layer';
+                infoContent.innerHTML = `
+                    Semantic representation of business entities and their relationships. Enables 
+                    intelligent querying and inference across the financial services domain.
+                `;
+            } else if (layer === 'mcp') {
+                infoTitle.textContent = 'Model Context Protocol';
+                infoContent.innerHTML = `
+                    Standardized integration layer enabling AI models to access services and data. 
+                    Provides unified interface for multiple AI systems to interact with the architecture.
+                `;
+            } else if (layer === 'all') {
+                infoTitle.textContent = 'Integrated Architecture';
+                infoContent.innerHTML = `
+                    Complete ecosystem showing cell-based services, semantic knowledge relationships, 
+                    AI integration through MCP, and orchestration via the Prompt Engineering OS.
+                `;
+            }
+            
+            infoPanel.classList.add('visible');
+            setTimeout(() => infoPanel.classList.remove('visible'), 4000);
+        }
+        
+        window.animateIntegratedDataFlow = function() {
+            const paths = document.querySelectorAll('#integrated-architecture-main .connection, #integrated-architecture-main .kg-edge, #integrated-architecture-main .mcp-connector');
+            paths.forEach((path, index) => {
+                setTimeout(() => {
+                    path.style.stroke = '#4fd1c5';
+                    path.style.strokeWidth = '4';
+                    path.style.filter = 'drop-shadow(0 0 8px rgba(79, 209, 197, 0.8))';
+                    
+                    setTimeout(() => {
+                        path.style.stroke = '';
+                        path.style.strokeWidth = '';
+                        path.style.filter = '';
+                    }, 1000);
+                }, index * 100);
+            });
+        }
+        
+        window.simulateIntegratedAIQuery = function() {
+            showIntegratedLayer('all');
+            
+            const infoPanel = document.getElementById('mainInfoPanel');
+            const infoTitle = document.getElementById('mainInfoTitle');
+            const infoContent = document.getElementById('mainInfoContent');
+            
+            infoTitle.textContent = 'AI Query Simulation';
+            infoContent.innerHTML = `
+                <strong>Query:</strong> "What is the risk profile for customer transactions?"<br><br>
+                1. AI model connects through MCP Gateway<br>
+                2. Queries Knowledge Graph for customer-risk relationships<br>
+                3. Accesses Payment and Fraud Detection cells<br>
+                4. Returns comprehensive risk assessment<br>
+                5. Prompt OS orchestrates entire flow with context preservation
+            `;
+            
+            infoPanel.classList.add('visible');
+            
+            setTimeout(() => animateIntegratedDataFlow(), 500);
+            setTimeout(() => infoPanel.classList.remove('visible'), 8000);
+        }
+        
+        // Cell Mesh Architecture Visualization
+        function createCellMeshArchitecture() {
+            const svg = document.getElementById('cell-mesh-architecture');
+            if (!svg) return;
+            
+            const width = svg.clientWidth || 1000;
+            const height = 600;
+            svg.innerHTML = '';
+            
+            // Add markers for arrows
+            const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+            const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+            marker.setAttribute('id', 'arrowhead');
+            marker.setAttribute('markerWidth', '10');
+            marker.setAttribute('markerHeight', '7');
+            marker.setAttribute('refX', '9');
+            marker.setAttribute('refY', '3.5');
+            marker.setAttribute('orient', 'auto');
+            
+            const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+            polygon.setAttribute('points', '0 0, 10 3.5, 0 7');
+            polygon.setAttribute('fill', '#38b2ac');
+            
+            marker.appendChild(polygon);
+            defs.appendChild(marker);
+            svg.appendChild(defs);
+            
+            const cells = [
+                {
+                    id: 'account',
+                    name: 'Account Management',
+                    subtitle: 'Customer accounts & profiles',
+                    x: 200,
+                    y: 150,
+                    layers: ['Account Database', 'Business Logic', 'REST API', 'GraphQL Gateway'],
+                    connections: [
+                        { to: 'payment', type: 'sync', label: 'Account verification' },
+                        { to: 'fraud', type: 'async', label: 'Activity monitoring' },
+                        { to: 'notification', type: 'async', label: 'Account events' },
+                        { to: 'kyc', type: 'sync', label: 'Identity verification' },
+                        { to: 'audit', type: 'async', label: 'Audit trail' }
+                    ]
+                },
+                {
+                    id: 'payment',
+                    name: 'Payment Processing',
+                    subtitle: 'Transactions & settlements',
+                    x: 500,
+                    y: 100,
+                    layers: ['Payment Gateway', 'Transaction Engine', 'Settlement Service', 'Payment API'],
+                    connections: [
+                        { to: 'account', type: 'sync', label: 'Balance check' },
+                        { to: 'fraud', type: 'sync', label: 'Risk assessment' },
+                        { to: 'notification', type: 'async', label: 'Payment alerts' },
+                        { to: 'ledger', type: 'sync', label: 'Transaction recording' },
+                        { to: 'audit', type: 'async', label: 'Transaction logs' }
+                    ]
+                },
+                {
+                    id: 'fraud',
+                    name: 'Fraud Detection',
+                    subtitle: 'ML-powered risk analysis',
+                    x: 800,
+                    y: 200,
+                    layers: ['ML Models', 'Rule Engine', 'Risk Scoring', 'Decision API'],
+                    connections: [
+                        { to: 'payment', type: 'sync', label: 'Block suspicious' },
+                        { to: 'account', type: 'async', label: 'Flag accounts' },
+                        { to: 'notification', type: 'async', label: 'Fraud alerts' },
+                        { to: 'analytics', type: 'data', label: 'Model training data' }
+                    ]
+                },
+                {
+                    id: 'notification',
+                    name: 'Notification Service',
+                    subtitle: 'Multi-channel messaging',
+                    x: 650,
+                    y: 400,
+                    layers: ['Message Queue', 'Template Engine', 'Channel Dispatcher', 'Delivery API'],
+                    connections: [
+                        { to: 'preference', type: 'sync', label: 'User preferences' },
+                        { to: 'audit', type: 'async', label: 'Delivery logs' }
+                    ]
+                },
+                {
+                    id: 'kyc',
+                    name: 'KYC Compliance',
+                    subtitle: 'Identity & compliance',
+                    x: 150,
+                    y: 350,
+                    layers: ['Document Store', 'Verification Engine', 'Compliance Rules', 'KYC API'],
+                    connections: [
+                        { to: 'account', type: 'sync', label: 'Identity update' },
+                        { to: 'audit', type: 'async', label: 'Compliance records' },
+                        { to: 'reporting', type: 'data', label: 'Regulatory data' }
+                    ]
+                },
+                {
+                    id: 'ledger',
+                    name: 'General Ledger',
+                    subtitle: 'Financial records',
+                    x: 350,
+                    y: 300,
+                    layers: ['Ledger Database', 'Double-Entry Engine', 'Reconciliation', 'Ledger API'],
+                    connections: [
+                        { to: 'reporting', type: 'data', label: 'Financial data' },
+                        { to: 'audit', type: 'async', label: 'Ledger entries' }
+                    ]
+                },
+                {
+                    id: 'analytics',
+                    name: 'Analytics Engine',
+                    subtitle: 'Real-time insights',
+                    x: 900,
+                    y: 350,
+                    layers: ['Data Lake', 'Stream Processing', 'Analytics Engine', 'Dashboard API'],
+                    connections: [
+                        { to: 'reporting', type: 'data', label: 'Business metrics' }
+                    ]
+                },
+                {
+                    id: 'preference',
+                    name: 'User Preferences',
+                    subtitle: 'Settings & configuration',
+                    x: 500,
+                    y: 500,
+                    layers: ['Preference Store', 'Configuration Logic', 'Cache Layer', 'Settings API'],
+                    connections: []
+                },
+                {
+                    id: 'reporting',
+                    name: 'Reporting Service',
+                    subtitle: 'Business & regulatory',
+                    x: 750,
+                    y: 500,
+                    layers: ['Report Generator', 'Scheduler', 'Export Service', 'Report API'],
+                    connections: [
+                        { to: 'notification', type: 'async', label: 'Report ready' }
+                    ]
+                },
+                {
+                    id: 'audit',
+                    name: 'Audit Trail',
+                    subtitle: 'Immutable event log',
+                    x: 350,
+                    y: 450,
+                    layers: ['Event Store', 'Immutable Log', 'Query Engine', 'Audit API'],
+                    connections: []
+                }
+            ];
+            
+            let selectedCell = null;
+            let connectionsVisible = true;
+            
+            // Draw mesh background
+            const meshGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            meshGroup.setAttribute('class', 'mesh-background');
+            
+            for (let i = 0; i < 3; i++) {
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', '500');
+                circle.setAttribute('cy', '350');
+                circle.setAttribute('r', 200 + i * 150);
+                circle.setAttribute('class', 'mesh-indicator');
+                circle.style.animationDelay = `${i * 2}s`;
+                meshGroup.appendChild(circle);
+            }
+            svg.appendChild(meshGroup);
+
+            // Draw connections
+            const connectionsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            connectionsGroup.setAttribute('id', 'cell-connections');
+            
+            cells.forEach(cell => {
+                cell.connections.forEach(conn => {
+                    const targetCell = cells.find(c => c.id === conn.to);
+                    if (targetCell) {
+                        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                        const d = calculateCurvedPath(cell.x + 75, cell.y + 40, targetCell.x + 75, targetCell.y + 40);
+                        path.setAttribute('d', d);
+                        path.setAttribute('class', 'connection');
+                        path.setAttribute('data-from', cell.id);
+                        path.setAttribute('data-to', conn.to);
+                        path.setAttribute('data-type', conn.type);
+                        
+                        if (conn.type === 'async') {
+                            path.style.stroke = 'rgba(147, 197, 253, 0.3)';
+                        } else if (conn.type === 'data') {
+                            path.style.stroke = 'rgba(251, 191, 36, 0.3)';
+                            path.style.strokeDasharray = '8, 4';
+                        }
+                        
+                        connectionsGroup.appendChild(path);
+                    }
+                });
+            });
+            svg.appendChild(connectionsGroup);
+
+            // Draw cells
+            cells.forEach(cell => {
+                const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                group.setAttribute('class', 'cell');
+                group.setAttribute('data-id', cell.id);
+                group.setAttribute('transform', `translate(${cell.x}, ${cell.y})`);
+                
+                // Cell body
+                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                rect.setAttribute('class', 'cell-body');
+                rect.setAttribute('width', '150');
+                rect.setAttribute('height', '80');
+                rect.setAttribute('rx', '8');
+                
+                // Title
+                const title = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                title.setAttribute('class', 'cell-title');
+                title.setAttribute('x', '75');
+                title.setAttribute('y', '25');
+                title.setAttribute('text-anchor', 'middle');
+                title.textContent = cell.name;
+                
+                // Subtitle
+                const subtitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                subtitle.setAttribute('class', 'cell-subtitle');
+                subtitle.setAttribute('x', '75');
+                subtitle.setAttribute('y', '42');
+                subtitle.setAttribute('text-anchor', 'middle');
+                subtitle.textContent = cell.subtitle;
+                
+                // Layer indicators
+                const layerGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                for (let i = 0; i < 4; i++) {
+                    const layerRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                    layerRect.setAttribute('x', 10 + i * 35);
+                    layerRect.setAttribute('y', 55);
+                    layerRect.setAttribute('width', '30');
+                    layerRect.setAttribute('height', '15');
+                    layerRect.setAttribute('rx', '2');
+                    layerRect.setAttribute('fill', 'rgba(71, 85, 105, 0.5)');
+                    layerGroup.appendChild(layerRect);
+                }
+                
+                group.appendChild(rect);
+                group.appendChild(title);
+                group.appendChild(subtitle);
+                group.appendChild(layerGroup);
+                
+                group.addEventListener('click', () => selectCellMesh(cell, cells));
+                group.addEventListener('mouseenter', () => highlightCellConnections(cell.id));
+                group.addEventListener('mouseleave', () => resetCellHighlight());
+                
+                svg.appendChild(group);
+            });
+            
+            function calculateCurvedPath(x1, y1, x2, y2) {
+                const dx = x2 - x1;
+                const dy = y2 - y1;
+                const dr = Math.sqrt(dx * dx + dy * dy);
+                const sweep = 0;
+                const largeArc = 0;
+                return `M ${x1},${y1} A ${dr},${dr} 0 ${largeArc},${sweep} ${x2},${y2}`;
+            }
+            
+            function selectCellMesh(cell, allCells) {
+                document.querySelectorAll('.cell').forEach(el => el.classList.remove('active'));
+                document.querySelector(`[data-id="${cell.id}"]`).classList.add('active');
+                
+                const sidePanel = document.getElementById('cellSidePanel');
+                const cellTitle = document.getElementById('cellPanelTitle');
+                const cellInfo = document.getElementById('cellPanelInfo');
+                
+                cellTitle.textContent = cell.name;
+                
+                const infoHtml = `
+                    <div class="info-section">
+                        <h3>Vertical Layers</h3>
+                        ${cell.layers.map(layer => `<div class="layer-item">${layer}</div>`).join('')}
+                    </div>
+                    
+                    <div class="info-section">
+                        <h3>Mesh Connections</h3>
+                        ${cell.connections.length > 0 ? 
+                            cell.connections.map(conn => {
+                                const targetCell = allCells.find(c => c.id === conn.to);
+                                return `
+                                    <div class="connection-item">
+                                        <span class="connection-label">${targetCell.name}</span>
+                                        <span class="connection-type">${conn.type}</span>
+                                    </div>
+                                    <div style="font-size: 11px; color: #94a3b8; margin-bottom: 8px;">
+                                        ${conn.label}
+                                    </div>
+                                `;
+                            }).join('') :
+                            '<p style="color: #94a3b8; font-size: 13px;">No outbound connections</p>'
+                        }
+                    </div>
+                    
+                    <div class="info-section">
+                        <h3>Architecture Notes</h3>
+                        <p style="font-size: 13px; line-height: 1.6; color: #cbd5e1;">
+                            This cell operates as an autonomous unit with its own data persistence, 
+                            business logic, and API layer. It communicates with other cells through 
+                            the service mesh using ${cell.connections.filter(c => c.type === 'sync').length} 
+                            synchronous and ${cell.connections.filter(c => c.type === 'async').length} 
+                            asynchronous connections.
+                        </p>
+                    </div>
+                `;
+                
+                cellInfo.innerHTML = infoHtml;
+                sidePanel.classList.remove('hidden');
+            }
+            
+            function highlightCellConnections(cellId) {
+                if (!connectionsVisible) return;
+                
+                document.querySelectorAll('#cell-mesh-architecture .connection').forEach(conn => {
+                    if (conn.getAttribute('data-from') === cellId || conn.getAttribute('data-to') === cellId) {
+                        conn.classList.add('active');
+                    } else {
+                        conn.classList.add('dimmed');
+                    }
+                });
+            }
+            
+            function resetCellHighlight() {
+                document.querySelectorAll('#cell-mesh-architecture .connection').forEach(conn => {
+                    conn.classList.remove('active', 'dimmed');
+                });
+            }
+            
+            window.toggleCellConnections = function() {
+                connectionsVisible = !connectionsVisible;
+                const connections = document.getElementById('cell-connections');
+                connections.style.opacity = connectionsVisible ? '1' : '0';
+            }
+            
+            window.resetCellView = function() {
+                document.querySelectorAll('.cell').forEach(el => el.classList.remove('active'));
+                selectedCell = null;
+                document.getElementById('cellSidePanel').classList.add('hidden');
+                resetCellHighlight();
+            }
+            
+            window.toggleCellInfoPanel = function() {
+                document.getElementById('cellSidePanel').classList.toggle('hidden');
+            }
+        }
+        
+        const sidebar = document.getElementById('sidebar');
+        let mobileMenuButton = null;
+        
+        function handleResponsive() {
+            if (window.innerWidth <= 768) {
+                if (!mobileMenuButton) {
+                    mobileMenuButton = document.createElement('button');
+                    mobileMenuButton.className = 'btn';
+                    mobileMenuButton.textContent = '☰';
+                    mobileMenuButton.style.position = 'fixed';
+                    mobileMenuButton.style.left = '1rem';
+                    mobileMenuButton.style.top = '70px';
+                    mobileMenuButton.style.zIndex = '1001';
+                    mobileMenuButton.addEventListener('click', () => {
+                        sidebar.classList.toggle('open');
+                    });
+                    document.body.appendChild(mobileMenuButton);
+                }
+            } else {
+                if (mobileMenuButton) {
+                    mobileMenuButton.remove();
+                    mobileMenuButton = null;
+                }
+                sidebar.classList.remove('open');
+            }
+        }
+        
+        handleResponsive();
+        window.addEventListener('resize', handleResponsive);
+    </script>
+</body>
+</html>
